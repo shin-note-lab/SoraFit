@@ -1,6 +1,8 @@
-# SoraFit FINAL v1.30
+# SoraFit v1.30.1
 
 最終公開用PWA。Open-Meteoを利用し、服装・アウター・傘・雨時間・1時間予報・最大16日予報を表示します。
+
+画面下中央の丸いショートカットから、表示中の地点に合わせたYahoo!天気の雨雲レーダーを開けます。
 
 ## 公開方法
 このフォルダの内容を、GitHub Pages等のHTTPS静的ホスティングのルートへそのまま配置します。`index.html` / `manifest.webmanifest` / `sw.js` / `icons/` の相対配置を変更しないでください。

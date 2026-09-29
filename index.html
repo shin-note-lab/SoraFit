@@ -515,8 +515,20 @@ footer{font-size:8px;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
 .push-btn.is-on{background:#173f5f;border-color:#69c4ff;color:#fff}.push-btn:disabled{opacity:.5}
 @media(max-width:520px){.push-settings-row{align-items:flex-start}.push-settings-copy h2{font-size:17px}.push-btn{min-width:94px;padding:10px 11px}}
 
+/* Keep the Yahoo! rain radar within thumb reach on every screen. */
+.app-shell{padding-bottom:108px}
+.radar-dock{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));z-index:950;transform:translateX(-50%);width:82px;height:82px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:3px solid #88c9ff;border-radius:50%;background:radial-gradient(circle at 50% 42%,#286393 0%,#173a60 60%,#0c223b 100%);box-shadow:0 0 0 5px rgba(11,26,44,.82),0 12px 28px rgba(0,0,0,.48);color:#fff;text-decoration:none;text-align:center;touch-action:manipulation;transition:transform .15s ease,filter .15s ease}
+.radar-dock:hover{transform:translateX(-50%) translateY(-3px);filter:brightness(1.12)}
+.radar-dock:active{transform:translateX(-50%) scale(.95)}
+.radar-dock:focus-visible{outline:3px solid #fff;outline-offset:7px}
+.radar-dock svg{width:31px;height:31px;display:block;margin-bottom:1px}
+.radar-dock strong{font-size:11px;line-height:1.2;white-space:nowrap}
+.radar-dock small{font-size:8px;line-height:1.2;color:#b5dcff;font-weight:800}
+body.locked .radar-dock{display:none}
+.toast{bottom:calc(112px + env(safe-area-inset-bottom))}
+
 </style>
-  <meta name="sorafit-version" content="1.30-final" />
+  <meta name="sorafit-version" content="1.30.1" />
 </head>
 <body class="locked">
   <div id="accessGate" class="access-gate" hidden>
@@ -755,6 +767,11 @@ footer{font-size:8px;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
         </section>
       </section>
     </main>
+
+    <a id="radarYahooDock" class="radar-dock" href="https://weather.yahoo.co.jp/weather/zoomradar/" target="_blank" rel="noopener" aria-label="Yahoo!天気の雨雲レーダーを開く" title="Yahoo!天気の雨雲レーダー">
+      <svg viewBox="0 0 48 48" fill="none" aria-hidden="true"><circle cx="24" cy="24" r="18" stroke="#92cbf7" stroke-width="2"/><circle cx="24" cy="24" r="10" stroke="#5aabe9" stroke-width="2"/><path d="M24 24L37 11" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="24" cy="24" r="3" fill="#fff"/><path d="M14 17c1-3 5-4 7-1M28 32c3-2 7 0 7 3" stroke="#a6e6ff" stroke-width="3" stroke-linecap="round"/></svg>
+      <strong>雨雲レーダー</strong><small>Yahoo!天気</small>
+    </a>
 
     <footer>
       <p>天気：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>（CC BY 4.0 / Best Match）</p>
@@ -1255,7 +1272,7 @@ footer{font-size:8px;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
     currentHumidity: $('currentHumidity'), currentWind: $('currentWind'), hourlyList: $('hourlyList'),
     dailyList: $('dailyList'), startHour: $('startHour'), endHour: $('endHour'), saveSettingsBtn: $('saveSettingsBtn'),
     rainTimingText: $('rainTimingText'), weatherAlertText: $('weatherAlertText'), speakBtn: $('speakBtn'), morningSummaryText: $('morningSummaryText'),
-    radarYahooBtn: $('radarYahooBtn'), installBtn: $('installBtn'), installHint: $('installHint'),
+    radarYahooBtn: $('radarYahooBtn'), radarYahooDock: $('radarYahooDock'), installBtn: $('installBtn'), installHint: $('installHint'),
     pushBtn: $('pushBtn'), pushHint: $('pushHint'), pushLocationText: $('pushLocationText'),
     saveLocationBtn: $('saveLocationBtn'), savedLocations: $('savedLocations'), savedTabsBar: $('savedTabsBar'),
     topStack: $('topStack'), topStackSpacer: $('topStackSpacer')
@@ -1770,7 +1787,9 @@ footer{font-size:8px;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
   }
 
   function updateExternalLinks(loc) {
-    if (els.radarYahooBtn) els.radarYahooBtn.href = buildYahooRadarURL(loc);
+    const url = buildYahooRadarURL(loc);
+    if (els.radarYahooBtn) els.radarYahooBtn.href = url;
+    if (els.radarYahooDock) els.radarYahooDock.href = url;
   }
 
   function normalizeLocationQuery(query) {
