@@ -1,0 +1,41 @@
+{
+  "id": "./",
+  "name": "SoraFit｜天気から、今日の準備まで。",
+  "short_name": "SoraFit",
+  "description": "服装・傘・雨時間・毎朝6時の天気通知に対応した無料PWA",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#0d0f12",
+  "theme_color": "#142740",
+  "lang": "ja",
+  "orientation": "portrait-primary",
+  "categories": [
+    "weather",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

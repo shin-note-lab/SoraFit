@@ -1,0 +1,2136 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#142740" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="SoraFit" />
+  <meta name="description" content="天気から、今日の準備まで。服装・アウター・傘、1時間予報、最大16日予報を確認できる無料PWA。" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <title>SoraFit｜天気から、今日の準備まで。</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
+  <style>
+:root{
+  --bg:#0d0f12;--panel:#1b1d20;--panel2:#202326;--navy:#162940;--navy2:#1b3554;
+  --text:#f4f6f8;--muted:#a8adb5;--line:#34383d;--blue:#4ea0ff;--red:#ff5b55;
+  --cyan:#48b8ff;--rain:#59aefc;--shadow:0 10px 28px rgba(0,0,0,.25);--radius:12px;
+}
+*{box-sizing:border-box}html{background:var(--bg);color-scheme:dark}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text)}button,input{font:inherit}.app-shell{width:min(100%,860px);margin:0 auto;min-height:100vh}.topbar{position:sticky;top:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:calc(11px + env(safe-area-inset-top)) 16px 11px;background:var(--navy);box-shadow:0 2px 10px rgba(0,0,0,.22)}.brand-wrap{display:flex;align-items:center;gap:10px;min-width:0}.brand-icon{width:38px;height:38px;border-radius:11px;box-shadow:0 5px 15px rgba(0,83,210,.28);flex:0 0 auto}.brand-copy{min-width:0}.brand{font-size:20px;font-weight:900;letter-spacing:.2px}.brand-sub{font-size:10px;color:#a9b8ca;margin-top:1px}.icon-btn,.mini-action,.search-btn,.compact-control{border:0;border-radius:999px;color:#fff;background:#2a4665;font-weight:800}.icon-btn{width:40px;height:40px;font-size:22px}.mini-action{padding:8px 11px}.search-btn{padding:0 15px}.compact-control{padding:9px 14px}.location-panel{background:var(--navy);padding:11px 12px 14px;border-top:1px solid rgba(255,255,255,.04)}.location-current{display:grid;grid-template-columns:14px 1fr auto;gap:8px;align-items:center}.location-pin{color:#91a5bb;font-size:10px}.eyebrow{font-size:11px;color:#6aaeff;font-weight:800;letter-spacing:.03em}.location-name{font-size:20px;font-weight:900}.search-row{display:flex;gap:7px;margin-top:10px}.search-row input{min-width:0;flex:1;border:1px solid #41536a;background:#102136;color:#fff;padding:11px 13px;border-radius:10px;outline:none}.search-row input:focus{border-color:#67adff}.search-results{margin-top:8px;background:#151d27;border:1px solid #34465a;border-radius:10px;overflow:hidden}.result-btn{display:flex;width:100%;justify-content:space-between;gap:12px;padding:12px 14px;border:0;border-top:1px solid #2a3542;background:transparent;color:#fff;text-align:left}.result-btn:first-child{border-top:0}.result-btn span{color:#9ca8b6;font-size:12px}.status-box{margin:12px;padding:13px;border-radius:10px;background:#172131;border:1px solid #2b4058;display:grid;gap:4px}.status-box strong{font-size:14px}.status-box span{font-size:12px;color:#aeb9c6}.status-box.error{border-color:#7f3434;background:#2b1718}.status-box.warn{border-color:#7a6330;background:#2a2517}.card{margin:10px 7px;background:var(--panel);border:1px solid #272b2f;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}.dark-card{background:var(--panel)}.weather-overview{padding:0}.overview-grid{display:grid;grid-template-columns:1fr 1fr}.overview-day{min-height:205px;padding:17px 16px 14px;text-align:center;border-right:1px solid #26292d}.overview-day:last-child{border-right:0}.overview-date{font-size:18px;font-weight:850}.overview-icon{font-size:64px;line-height:1.2;margin:10px 0 3px}.overview-weather{font-size:19px;font-weight:900;margin:4px 0 11px}.overview-temp-line{display:flex;justify-content:center;gap:12px;align-items:baseline;font-size:17px}.temp-high{color:var(--red);font-size:25px}.temp-low{color:#5da7ff;font-size:22px;font-weight:800}.overview-rain{color:#d9e4ef;font-weight:800}.action-advice{border-top:1px solid #2c3034;padding:13px 14px 14px}.action-advice-title{font-weight:900;margin-bottom:10px}.decision-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.decision-item{background:#25282c;border-radius:10px;padding:10px 8px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:7px;align-items:center}.decision-item>span{grid-row:1/3;font-size:23px}.decision-item small{color:var(--muted);font-size:10px}.decision-item strong{font-size:12px;line-height:1.3}.rain-message{margin-top:9px;background:#15283b;border:1px solid #294c6d;border-radius:10px;padding:10px;display:flex;gap:8px;align-items:flex-start}.rain-message>span{font-size:22px}.rain-message div{display:grid;gap:2px}.rain-message small{color:#8ec5ff}.rain-message strong{font-size:13px;line-height:1.5}.advice-text{color:#d1d5da;font-size:12px;line-height:1.65;margin:9px 2px}.voice-btn{width:100%;padding:11px 14px;border:0;border-radius:10px;background:#2e6ea6;color:white;font-weight:900}.voice-btn:disabled{opacity:.45}.voice-btn.is-speaking{background:#8a3a3a}.source-stamp{color:#7f8994;font-size:9px;margin-top:7px;text-align:right}.section-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.compact-head{padding:14px 14px 10px}.section-head h2{font-size:20px;margin:2px 0 0}.pill{background:#26313e;color:#dfe9f4;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:800}.hourly-card-shell{padding-bottom:12px}.hourly-board{display:grid;grid-template-columns:54px minmax(0,1fr);border-top:1px solid #2e3237}.hourly-row-labels{display:grid;grid-template-rows:34px 54px 42px 42px 48px 42px 54px;background:#191b1e;border-right:1px solid #30343a;z-index:2}.hourly-row-labels span{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:850;color:#d8dde3;border-bottom:1px solid #2a2e32}.hourly-list{display:flex;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:thin;background:#202225}.hour-col{flex:0 0 72px;display:grid;grid-template-rows:34px 54px 42px 42px 48px 42px 54px;border-right:1px solid #32363a;scroll-snap-align:start}.hour-cell{display:flex;align-items:center;justify-content:center;border-bottom:1px solid #2f3337;text-align:center;font-size:12px}.hour-time{font-weight:900;color:#e9edf1}.hour-weather{font-size:25px}.hour-temp{font-size:16px;font-weight:900}.hour-prob{font-weight:800}.hour-rain{display:grid;align-content:center;gap:2px;color:#e9f4ff}.rain-microbar{height:18px;width:8px;margin:0 auto;background:#323a43;border-radius:4px;display:flex;align-items:flex-end;overflow:hidden}.rain-microbar i{display:block;width:100%;background:#49a8ff;min-height:0}.hour-humidity{color:#d5d9dd}.hour-wind{display:grid;gap:2px}.hour-wind strong{font-size:12px}.hour-wind small{font-size:9px;color:#aeb4bc}.week-head,.day-row{display:grid;grid-template-columns:1.25fr 64px 54px 54px 62px 72px;align-items:center;text-align:center}.week-head{padding:0 12px 6px;color:#7f8993;font-size:9px}.day-row{padding:11px 12px;border-top:1px solid #303438}.day-row:first-child{border-top:1px solid #303438}.day-date{text-align:left;font-weight:900}.day-date .weekday{margin-left:5px}.weekday.sun{color:#ff6b64}.weekday.sat{color:#5aa9ff}.day-icon{font-size:26px}.day-high{color:var(--red);font-size:17px;font-weight:900}.day-low{color:#5da7ff;font-size:17px;font-weight:900}.day-rain{font-weight:850;color:#d5d9de}.day-wind{display:grid;justify-items:center;gap:1px;font-weight:850;color:#d5d9de;line-height:1.05}.day-wind small{font-size:8px;color:#8997a6}.day-wind b{font-size:8px;color:#ffbf69;background:rgba(255,160,67,.12);border:1px solid rgba(255,177,95,.22);border-radius:999px;padding:2px 4px;margin-top:2px}.day-wind.strong{color:#ffbf69}.live-map{width:calc(100% - 20px);height:430px;margin:0 10px;border:1px solid #33383e;border-radius:9px;overflow:hidden;background:#252a2f}.typhoon-map{height:500px}.map-status{margin:0 10px 10px;padding:11px;border-radius:8px;background:#252b31;color:#bac3cc;font-size:12px}.radar-controls{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:10px 11px}.radar-slider{width:100%}.radar-time{font-size:11px;white-space:nowrap}.radar-legend{display:flex;align-items:center;gap:7px;padding:0 12px;color:#9ba4ae;font-size:9px}.radar-gradient{height:8px;flex:1;border-radius:99px;background:linear-gradient(90deg,#56c8ff,#36a5ff,#4be17c,#f7e84c,#ff8a3c,#f03c44)}.external-actions{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px 12px}.data-credit{font-size:8px;color:#7f8891}.secondary-link{color:#86c3ff;text-decoration:none;font-size:10px;font-weight:800}.typhoon-summary{display:grid;gap:9px;padding:0 10px 10px}.no-typhoon{padding:13px;background:#23272b;border:1px solid #33383e;border-radius:9px;color:#d9dee3;font-size:12px}.typhoon-info-card{background:#23272b;border:1px solid #343a40;border-radius:10px;padding:12px}.typhoon-info-card>strong{font-size:17px}.typhoon-info-card>.typhoon-class{color:#ffb56a;font-size:11px;font-weight:800;margin-top:2px}.typhoon-narrative{margin-top:9px;padding:10px;border-radius:8px;background:#17293a;border:1px solid #2d5375;color:#f0f6fc;font-size:13px;line-height:1.65}.typhoon-closest{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.typhoon-closest>div{background:#1b1e21;border-radius:8px;padding:8px}.typhoon-closest small{display:block;color:#8e98a2;font-size:9px}.typhoon-closest strong{font-size:13px}.typhoon-info-card dl{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin:10px 0 0}.typhoon-info-card dt{font-size:9px;color:#8e98a2}.typhoon-info-card dd{margin:2px 0 0;font-size:11px;font-weight:800}.typhoon-info-card>small{display:block;color:#868f99;margin-top:7px;font-size:9px}.typhoon-note{color:#9099a3;font-size:9px;line-height:1.55;padding:8px 12px 0;margin:0}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 12px 13px}.metric{background:#25282c;border-radius:8px;padding:9px;text-align:center}.metric span{display:block;color:#9ca4ad;font-size:9px}.metric strong{display:block;margin-top:3px;font-size:15px}.time-settings{display:flex;gap:8px;align-items:end;flex-wrap:wrap;padding:0 12px 14px}.time-settings label{display:grid;gap:4px;color:#aab2ba;font-size:10px}.time-settings input{background:#262a2f;color:#fff;border:1px solid #3b4147;border-radius:8px;padding:8px}footer{padding:18px 14px calc(24px + env(safe-area-inset-bottom));color:#737c85;font-size:9px;line-height:1.6}footer a{color:#89bdf2}.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#f1f3f5;color:#111;padding:10px 13px;border-radius:999px;z-index:1000;font-size:12px;font-weight:800;box-shadow:0 8px 30px rgba(0,0,0,.3)}.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.leaflet-control-attribution{font-size:7px!important}.leaflet-container{background:#252a2f!important}
+@media(max-width:520px){.app-shell{width:100%}.card{margin:7px 6px}.overview-day{min-height:188px;padding:15px 10px 12px}.overview-icon{font-size:55px}.overview-weather{font-size:17px}.decision-grid{gap:5px}.decision-item{padding:8px 5px}.decision-item strong{font-size:11px}.hourly-board{grid-template-columns:50px minmax(0,1fr)}.hour-col{flex-basis:66px}.live-map{height:390px}.typhoon-map{height:455px}.week-head,.day-row{grid-template-columns:1.1fr 52px 46px 46px 54px 62px}.week-head{font-size:8px}.day-row{padding:10px 8px}.day-date{font-size:12px}.day-icon{font-size:23px}.day-high,.day-low{font-size:15px}.day-rain,.day-wind{font-size:12px}.section-head h2{font-size:18px}}
+.section-note{margin:.65rem 0 0;color:#9fb0c2;font-size:.78rem;line-height:1.55}
+
+.external-link-group{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.typhoon-external-actions{align-items:center}@media(max-width:560px){.typhoon-external-actions{align-items:flex-start;flex-direction:column}.external-link-group{width:100%;justify-content:space-between}.external-link-group .secondary-link{font-size:11px}}
+
+
+/* v1.10: 雨雲・台風は外部リンクのみ。地図を常時読み込まず、リンクカードを主役にする。 */
+.external-weather-card{padding-bottom:14px}
+.external-weather-intro{margin:0;padding:0 14px 13px;color:#aeb7c2;font-size:12px;line-height:1.65}
+.weather-link-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 12px}
+.weather-link-btn{position:relative;display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:11px;min-height:76px;padding:12px 13px;border-radius:14px;text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,.11);overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.18);transition:transform .15s ease,border-color .15s ease,filter .15s ease}
+.weather-link-btn::after{content:"";position:absolute;inset:auto -24px -36px auto;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.06);pointer-events:none}
+.weather-link-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.24);filter:brightness(1.06)}
+.weather-link-btn:active{transform:scale(.985)}
+.weather-link-yahoo{background:linear-gradient(135deg,#163c68 0%,#205e99 60%,#257ac2 100%)}
+.weather-link-jma{background:linear-gradient(135deg,#173a46 0%,#185a68 58%,#1b7785 100%)}
+.weather-link-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:13px;background:rgba(255,255,255,.10);font-size:25px;border:1px solid rgba(255,255,255,.08)}
+.weather-link-copy{display:grid;gap:3px;min-width:0}
+.weather-link-copy strong{font-size:15px;letter-spacing:.01em}
+.weather-link-copy small{color:rgba(255,255,255,.72);font-size:10px;line-height:1.35}
+.weather-link-arrow{position:relative;z-index:1;font-size:20px;color:rgba(255,255,255,.78)}
+@media(max-width:560px){.weather-link-grid{grid-template-columns:1fr}.weather-link-btn{min-height:72px}.external-weather-intro{font-size:11px}}
+
+/* v1.11: installable PWA card and unified brand icon */
+.install-card{padding:14px}
+.install-app-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:12px;align-items:center}
+.install-app-icon{width:58px;height:58px;border-radius:16px;box-shadow:0 8px 20px rgba(0,78,210,.28)}
+.install-app-copy{min-width:0}
+.install-app-copy h2{font-size:17px;margin:2px 0 4px}
+.install-app-copy p{margin:0;color:#9fabb7;font-size:10px;line-height:1.5}
+.install-btn{border:1px solid rgba(255,255,255,.14);background:linear-gradient(135deg,#277ee9,#1d5fd7);color:#fff;border-radius:12px;padding:11px 13px;font-weight:900;white-space:nowrap;box-shadow:0 6px 16px rgba(14,90,210,.25)}
+.install-btn:disabled{opacity:.55;box-shadow:none}
+@media(max-width:560px){.install-app-row{grid-template-columns:50px minmax(0,1fr)}.install-app-icon{width:50px;height:50px;border-radius:14px}.install-btn{grid-column:1/-1;width:100%}}
+
+
+body.locked .app-shell{display:none}
+.access-gate[hidden]{display:none!important}
+.access-gate{position:fixed;inset:0;z-index:2000;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top,#23456b 0%,#0f1d30 32%,#08111d 100%)}
+.access-card{width:min(100%,420px);background:rgba(18,28,43,.96);border:1px solid rgba(119,171,255,.22);border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,.45);padding:28px 22px;color:#eef4fb;text-align:center}
+.access-card img{width:72px;height:72px;border-radius:20px;box-shadow:0 12px 28px rgba(19,119,255,.28);margin-bottom:12px}
+.access-card h1{margin:8px 0 10px;font-size:24px;line-height:1.25}
+.access-card p{margin:0;color:#a9bbcf;line-height:1.7;font-size:14px}
+.access-form{display:grid;gap:10px;margin-top:18px}
+.access-form input{width:100%;border:1px solid #35506f;background:#0c1726;color:#fff;border-radius:14px;padding:14px 16px;font-size:16px;outline:none}
+.access-form input:focus{border-color:#6fb1ff;box-shadow:0 0 0 3px rgba(85,160,255,.16)}
+.access-form button{border:0;border-radius:999px;padding:14px 16px;font-weight:900;font-size:15px;color:#fff;background:linear-gradient(135deg,#2f7bff,#30a1ff);cursor:pointer;box-shadow:0 10px 24px rgba(33,111,255,.25)}
+.access-error{min-height:1.2em;color:#ffb3b3;font-size:12px;margin-top:10px}
+.access-note{margin-top:12px;font-size:11px;color:#7f95ac}
+.access-code-hint{margin-top:8px;font-size:12px;color:#d6e7fb;background:#112033;border:1px solid rgba(112,177,255,.18);padding:9px 11px;border-radius:12px}
+
+.weather-alert{margin-top:9px;border-radius:11px;padding:11px 12px;display:grid;gap:4px;border:1px solid #405467;background:#1a2633}.weather-alert[hidden]{display:none!important}.weather-alert strong{font-size:13px}.weather-alert span{font-size:11px;line-height:1.55;color:#d4dce5}.weather-alert.level-1{border-color:#6f6637;background:#2b2719}.weather-alert.level-1 strong{color:#ffe184}.weather-alert.level-2{border-color:#67512f;background:#2b2117}.weather-alert.level-2 strong{color:#ffc76d}.weather-alert.level-3{border-color:#7a3939;background:#321b1d}.weather-alert.level-3 strong{color:#ff9696}
+.weather-alert .alert-line{display:grid;gap:4px}.weather-alert .alert-line+.alert-line{border-top:1px solid rgba(255,255,255,.1);padding-top:9px;margin-top:5px}
+
+
+/* v1.15 style updates */
+.overview-icon svg{width:78px;height:78px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.18))}
+.hour-weather svg{width:30px;height:30px;display:block}
+.day-icon svg{width:34px;height:34px;display:block;margin:0 auto}
+.wx-ico{overflow:visible}
+.week-head,.day-row{grid-template-columns:1.18fr 60px 54px 54px 58px 72px 72px}
+.day-feel{display:grid;justify-items:center;gap:2px;font-weight:850;color:#dbe3eb;line-height:1.05}
+.day-feel b{font-size:9px;border-radius:999px;padding:2px 6px;border:1px solid transparent;background:rgba(255,255,255,.06)}
+.day-feel.hot b{color:#ffb06a;border-color:rgba(255,177,95,.24);background:rgba(255,160,67,.12)}
+.day-feel.warm b{color:#ffd27b;border-color:rgba(255,210,123,.2);background:rgba(255,210,123,.10)}
+.day-feel.comfy b{color:#b9e5a2;border-color:rgba(170,227,129,.18);background:rgba(111,196,74,.08)}
+.day-feel.cool b{color:#99d2ff;border-color:rgba(120,187,255,.2);background:rgba(66,133,244,.10)}
+.day-feel.cold b{color:#9fd1ff;border-color:rgba(127,190,255,.22);background:rgba(61,118,199,.12)}
+.day-feel small{font-size:8px;color:#8997a6}
+@media(max-width:520px){.week-head,.day-row{grid-template-columns:1.05fr 46px 42px 42px 50px 58px 58px}.day-icon svg{width:28px;height:28px}.day-feel,.day-wind{font-size:11px}.day-feel b,.day-wind b{font-size:7px;padding:2px 3px}}
+
+
+/* v1.16 long-range forecast */
+.forecast-range-note{margin:-2px 14px 10px;color:#91a4b8;font-size:10px;line-height:1.5}
+.day-row.distant{background:rgba(255,255,255,.012)}
+.reference-badge{display:inline-block;margin-left:6px;padding:2px 5px;border-radius:999px;font-size:7px;font-weight:850;color:#9db3c9;background:#273442;border:1px solid #36485b;vertical-align:middle}
+
+.day-humidity small{font-size:10px;color:#90a1b4}
+
+
+/* v1.17 final overrides */
+.week-head,.day-row{display:grid;grid-template-columns:1.16fr 58px 50px 50px 56px 56px 72px 72px;align-items:center;text-align:center}
+.day-date{display:grid;grid-template-columns:auto auto;align-items:center;justify-content:start;gap:6px;text-align:left;font-weight:900}
+.day-date .weekday{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:999px;border:1px solid #516173;background:#232f3c;font-size:11px;font-weight:900;color:#dbe5ef;margin-left:0}
+.day-date .weekday.sun{color:#ff9d9d;border-color:#7a4343;background:#342125}
+.day-date .weekday.sat{color:#8fb8ff;border-color:#3c557c;background:#202a3a}
+.day-rain,.day-high,.day-low,.day-humidity,.day-wind{font-weight:850;font-size:13px}
+.day-humidity{color:#bfd8f1}
+.day-feel{font-size:12px;font-weight:850}
+.day-feel b{display:inline-block;font-size:9px;color:#cfe8ff;background:rgba(82,150,255,.12);border:1px solid rgba(113,172,255,.22);border-radius:999px;padding:3px 5px}
+@media(max-width:520px){
+  .week-head,.day-row{grid-template-columns:1.02fr 36px 38px 38px 44px 44px 52px 54px}
+  .day-row{padding:10px 6px}
+  .day-date{font-size:11px;gap:4px}
+  .day-date .weekday{width:20px;height:20px;font-size:10px}
+  .day-icon svg{width:24px;height:24px}
+  .day-rain,.day-wind,.day-feel,.day-humidity{font-size:10px}
+  .day-feel b,.day-wind b{font-size:7px;padding:2px 3px}
+}
+
+
+/* v1.18 compact mobile layout */
+html,body{overflow-x:hidden}
+.app-shell{max-width:760px}
+.topbar{padding:calc(9px + env(safe-area-inset-top)) 14px 9px}
+.brand-icon{width:34px;height:34px;border-radius:10px}
+.brand{font-size:18px}.brand-sub{font-size:9px}.icon-btn{width:36px;height:36px;font-size:19px}
+.location-panel{padding:9px 11px 11px}.location-name{font-size:17px}.eyebrow{font-size:10px}.search-row input{padding:9px 11px;font-size:14px}.search-btn{padding:0 13px;font-size:13px}.mini-action{padding:7px 10px;font-size:12px}
+.card{margin:8px 6px;border-radius:12px}.status-box{margin:10px 8px;padding:11px}.status-box strong{font-size:13px}.status-box span{font-size:11px}
+
+/* Today large + tomorrow/day-after compact stack */
+.overview-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(150px,.85fr);min-height:220px}
+.today-panel{display:grid;align-content:center;justify-items:center;padding:14px 12px;border-right:1px solid #2b2f34;background:linear-gradient(180deg,rgba(58,112,168,.13),rgba(255,255,255,0))}
+.today-panel .overview-date{display:inline-flex;align-items:center;gap:6px;font-size:18px;font-weight:950;margin-bottom:4px}
+.today-panel .overview-date::before{content:'TODAY';font-size:8px;letter-spacing:.08em;color:#7fc0ff;background:#17324d;border:1px solid #2c5d86;border-radius:999px;padding:3px 6px}
+.today-panel .overview-icon svg{width:60px;height:60px}
+.today-panel .overview-weather{font-size:16px;margin:4px 0 8px}
+.today-panel .overview-temp-line{gap:8px;flex-wrap:nowrap}.today-panel .temp-high{font-size:22px}.today-panel .temp-low{font-size:19px}.today-panel .overview-rain{font-size:13px}
+.next-days-stack{display:grid;grid-template-rows:1fr 1fr;min-width:0}
+.mini-day{display:grid;grid-template-columns:42px minmax(0,1fr);grid-template-rows:auto auto;gap:2px 8px;align-content:center;padding:10px 10px;border-bottom:1px solid #2b2f34;min-width:0}
+.mini-day:last-child{border-bottom:0}.mini-day .overview-icon{grid-row:1/3;grid-column:1;margin:0;display:grid;place-items:center}.mini-day .overview-icon svg{width:38px;height:38px}
+.mini-day .mini-copy{min-width:0}.mini-day .overview-date{font-size:12px;font-weight:900;white-space:nowrap}.mini-day .overview-weather{font-size:11px;margin:1px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mini-day .overview-temp-line{justify-content:flex-start;gap:6px;font-size:11px;white-space:nowrap}.mini-day .temp-high{font-size:14px}.mini-day .temp-low{font-size:13px}.mini-day .overview-rain{font-size:11px}
+
+.action-advice{padding:11px 12px 12px}.action-advice-title{font-size:15px;margin-bottom:8px}.decision-grid{gap:6px}.decision-item{padding:8px 7px;border-radius:9px}.decision-item>span{font-size:19px}.decision-item small{font-size:9px}.decision-item strong{font-size:11px}.rain-message{padding:8px;margin-top:8px}.rain-message>span{font-size:19px}.rain-message small{font-size:10px}.rain-message strong{font-size:11px}.weather-alert{padding:9px 10px}.weather-alert strong{font-size:11px}.weather-alert span{font-size:10px}.advice-text{font-size:11px;margin:7px 2px}.voice-btn{padding:10px 12px;font-size:13px}.source-stamp{font-size:8px}
+.section-head h2{font-size:17px}.compact-head{padding:12px 12px 8px}.pill{font-size:9px;padding:5px 8px}
+
+/* Hourly icons and typography */
+.hourly-board{grid-template-columns:48px minmax(0,1fr)}.hourly-row-labels span{font-size:9px}.hour-col{flex-basis:62px}.hour-cell{font-size:10px}.hour-weather svg{width:25px;height:25px}.hour-temp{font-size:13px}.hour-wind strong{font-size:10px}.hour-wind small{font-size:8px}
+
+/* Weekly: always one physical row per day; scroll horizontally if needed */
+.weekly-card{overflow:hidden}.weekly-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}.weekly-table{min-width:650px}.week-head,.day-row{grid-template-columns:112px 52px 52px 52px 68px 58px 78px 70px;align-items:center;text-align:center}.week-head{padding:0 10px 6px;font-size:8px;white-space:nowrap}.day-row{padding:8px 10px;min-height:50px}.day-row.today-row{background:linear-gradient(90deg,rgba(44,117,186,.22),rgba(44,117,186,.03));box-shadow:inset 3px 0 0 #4ca6ff}.day-date{display:flex;align-items:center;justify-content:flex-start;gap:6px;white-space:nowrap;font-size:12px}.day-date .weekday{width:22px;height:22px;min-width:22px;font-size:10px}.day-icon svg{width:27px;height:27px}.day-high,.day-low{font-size:14px}.day-rain,.day-humidity,.day-wind{font-size:11px}.day-feel b{font-size:8px;padding:2px 5px;white-space:nowrap}.day-wind small{font-size:7px}.day-wind b{font-size:7px;padding:1px 4px;white-space:nowrap}.forecast-range-note,.section-note{font-size:9px;line-height:1.45}.forecast-range-note{margin:0 12px 8px}.section-note{padding:0 12px;margin:9px 0 12px}
+
+.metric-grid{gap:5px;padding:0 10px 11px}.metric{padding:8px}.metric span{font-size:8px}.metric strong{font-size:13px}
+.external-weather-intro{font-size:10px;padding:0 12px 10px}.weather-link-btn{min-height:64px;padding:9px 11px}.weather-link-icon{width:38px;height:38px;font-size:21px}.weather-link-copy strong{font-size:13px}.weather-link-copy small{font-size:9px}.weather-link-arrow{font-size:17px}
+.install-card{padding:11px}.install-app-row{grid-template-columns:46px minmax(0,1fr) auto;gap:9px}.install-app-icon{width:46px;height:46px}.install-app-copy h2{font-size:14px}.install-app-copy p{font-size:9px}.install-btn{font-size:12px;padding:9px 10px}
+.time-settings{padding:0 10px 12px}.time-settings label{font-size:9px}.time-settings input{padding:7px;font-size:12px}.compact-control{font-size:12px;padding:8px 12px}
+footer{font-size:8px;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
+
+@media(max-width:430px){
+  .overview-grid{grid-template-columns:minmax(0,1.45fr) minmax(138px,.9fr)}
+  .today-panel{padding:12px 8px}.today-panel .overview-date{font-size:16px}.today-panel .overview-icon svg{width:54px;height:54px}.today-panel .overview-weather{font-size:15px}.today-panel .temp-high{font-size:20px}.today-panel .temp-low{font-size:17px}.today-panel .overview-rain{font-size:11px}
+  .mini-day{grid-template-columns:36px minmax(0,1fr);padding:8px 7px;gap:1px 6px}.mini-day .overview-icon svg{width:32px;height:32px}.mini-day .overview-date{font-size:11px}.mini-day .overview-weather{font-size:10px}.mini-day .temp-high{font-size:13px}.mini-day .temp-low{font-size:12px}.mini-day .overview-rain{font-size:9px}
+  .decision-item{grid-template-columns:auto 1fr;column-gap:5px}.decision-item>span{font-size:17px}.decision-item strong{font-size:10px}
+  .weather-link-grid{grid-template-columns:1fr}
+}
+
+
+/* v1.19: compact weekly table, text morning summary, status fix */
+.status-box[hidden]{display:none!important}
+.morning-summary-bubble[hidden]{display:none!important}
+.morning-summary-bubble{position:relative;margin:12px 2px 4px;padding:12px 13px 12px 15px;border-radius:14px;background:linear-gradient(145deg,#172b40,#122338);border:1px solid #315676;color:#edf5fd;font-size:11px;line-height:1.7;white-space:pre-line;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.morning-summary-bubble::before{content:"";position:absolute;top:-8px;left:30px;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:8px solid #315676}
+.morning-summary-bubble::after{content:"";position:absolute;top:-6px;left:31px;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:7px solid #172b40}
+.morning-summary-bubble strong{color:#8fc9ff}
+
+/* Weekly forecast: no horizontal scrolling, one row contained in viewport */
+.weekly-scroll{overflow:visible!important}
+.weekly-table{min-width:0!important;width:100%!important}
+.week-head,.day-row{display:grid!important;grid-template-columns:minmax(72px,1.15fr) 34px 46px 46px 42px 42px 50px!important;align-items:center;text-align:center;column-gap:2px}
+.week-head{padding:0 7px 7px!important;font-size:7.5px!important;color:#b8c3cf!important;white-space:nowrap!important}
+.week-head>span{display:inline-flex;justify-content:center;align-items:center;min-height:20px;padding:3px 3px;border-radius:7px;border:1px solid #394656;background:#242d37;font-weight:900;letter-spacing:.01em}
+.week-head>span:nth-child(3){color:#ff9791;background:rgba(151,55,50,.15);border-color:#5d3836}
+.week-head>span:nth-child(4){color:#88bfff;background:rgba(52,99,160,.14);border-color:#344c6e}
+.week-head>span:nth-child(5){color:#97ccff;background:rgba(48,108,163,.14);border-color:#31526c}
+.week-head>span:nth-child(6){color:#b7d9ef;background:rgba(74,119,146,.12);border-color:#3a5667}
+.week-head>span:nth-child(7){color:#ffd19a;background:rgba(143,94,46,.13);border-color:#5d4936}
+.day-row{padding:8px 7px!important;min-height:56px!important}
+.day-row.today-row{background:linear-gradient(90deg,rgba(37,116,190,.28),rgba(27,42,57,.24))!important;box-shadow:inset 4px 0 0 #49a9ff!important}
+.day-date{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;white-space:nowrap!important;font-size:11px!important;min-width:0}
+.day-date>span:first-child{font-weight:950;letter-spacing:-.02em}
+.day-date .weekday{width:21px!important;height:21px!important;min-width:21px!important;font-size:9px!important;margin-left:0!important}
+.reference-badge{display:none!important}
+.day-icon svg{width:24px!important;height:24px!important}
+.day-high,.day-low{display:grid;justify-items:center;align-content:center;gap:2px;font-size:13px!important;line-height:1.05;font-weight:950}
+.day-rain,.day-humidity,.day-wind{font-size:10px!important;font-weight:850;line-height:1.1}
+.day-humidity{color:#c0d6e8}
+.temp-comment{display:block;max-width:44px;padding:2px 3px;border-radius:999px;font-size:6.5px;line-height:1.1;font-weight:900;white-space:nowrap}
+.temp-comment.hot{color:#ffc08b;background:rgba(255,130,60,.12);border:1px solid rgba(255,152,82,.20)}
+.temp-comment.cold{color:#a9d4ff;background:rgba(61,135,218,.11);border:1px solid rgba(89,159,232,.22)}
+.day-wind small{display:block;font-size:6.5px!important;color:#8d9bab}.day-wind b{font-size:6.5px!important;padding:1px 3px!important;white-space:nowrap}
+.forecast-range-note{font-size:8px!important;margin:0 10px 7px!important;line-height:1.4}.section-note{font-size:8px!important;padding:0 10px!important;line-height:1.45}
+
+@media(max-width:390px){
+  .week-head,.day-row{grid-template-columns:minmax(66px,1.1fr) 30px 43px 43px 40px 40px 46px!important;column-gap:1px}
+  .week-head{padding-left:5px!important;padding-right:5px!important;font-size:7px!important}.week-head>span{padding:3px 2px}
+  .day-row{padding-left:5px!important;padding-right:5px!important}.day-date{font-size:10.5px!important}.day-date .weekday{width:20px!important;height:20px!important;min-width:20px!important}
+  .day-high,.day-low{font-size:12px!important}.day-rain,.day-humidity,.day-wind{font-size:9px!important}.day-icon svg{width:22px!important;height:22px!important}.temp-comment{font-size:6px;max-width:41px;padding:2px}
+}
+
+
+/* v1.20: clearer hourly table, humidity comments, saved locations */
+.saved-location-box{margin-top:9px;padding-top:9px;border-top:1px solid rgba(255,255,255,.08)}
+.saved-location-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.saved-location-head>div{display:flex;align-items:baseline;gap:6px}.saved-location-head strong{font-size:11px}.saved-location-head small{font-size:8px;color:#89a0b7}
+.saved-location-add{border:1px solid #3f6284;background:#203b57;color:#dcecff;border-radius:999px;padding:6px 9px;font-size:9px;font-weight:900}.saved-location-add:disabled{opacity:.45}
+.saved-location-list{display:flex;gap:6px;overflow-x:auto;padding-bottom:1px;scrollbar-width:none}.saved-location-list::-webkit-scrollbar{display:none}
+.saved-location-empty{color:#7f92a6;font-size:9px;padding:5px 1px}
+.saved-location-chip{display:flex;align-items:center;flex:0 0 auto;border:1px solid #3a4b5e;background:#192a3c;border-radius:999px;overflow:hidden}.saved-location-chip.active{border-color:#5caeff;background:#183b5b;box-shadow:inset 0 0 0 1px rgba(92,174,255,.18)}
+.saved-location-open,.saved-location-remove{border:0;background:transparent;color:#dce9f5}.saved-location-open{padding:7px 8px 7px 10px;font-size:10px;font-weight:850;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.saved-location-remove{padding:7px 8px 7px 4px;color:#8fa3b7;font-size:13px;line-height:1}
+.hourly-row-labels span{font-weight:950!important;color:#edf5fc!important;border-bottom-color:#303944!important}
+.hourly-row-labels span:nth-child(1){background:#28394c}.hourly-row-labels span:nth-child(2){background:#203f49;color:#bfeef2!important}.hourly-row-labels span:nth-child(3){background:#4a2a2c;color:#ffb5b1!important}.hourly-row-labels span:nth-child(4){background:#263b58;color:#acd0ff!important}.hourly-row-labels span:nth-child(5){background:#183e59;color:#8fd4ff!important}.hourly-row-labels span:nth-child(6){background:#24414c;color:#b5e1ed!important}.hourly-row-labels span:nth-child(7){background:#4a3927;color:#ffd09b!important}
+.hour-time strong{font-size:11px}.hour-humidity{display:grid;align-content:center;gap:2px}.hour-humidity strong{font-size:10px}.humidity-note{display:block;font-size:6.5px;font-weight:900;line-height:1;padding:2px 3px;border-radius:999px;white-space:nowrap}.humidity-note.high{color:#9ed9ff;background:rgba(64,155,222,.13)}.humidity-note.low{color:#ffd195;background:rgba(213,145,63,.13)}
+.hour-day-divider{flex:0 0 58px;min-height:316px;display:grid;place-content:center;justify-items:center;gap:4px;background:linear-gradient(180deg,#27303a,#20262e);border-right:1px solid #3a4652;border-left:1px solid #3a4652;color:#f3f7fb}
+.hour-day-divider strong{font-size:11px;font-weight:950}.hour-day-divider small{font-size:8px;color:#9db1c5;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.02em}
+.weekly-scroll{overflow:visible!important}.weekly-table{width:100%!important;min-width:0!important}.week-head,.day-row{grid-template-columns:minmax(73px,1.18fr) 31px 45px 45px 42px 45px 49px!important;column-gap:1px!important}
+.day-date{justify-content:center!important;text-align:center!important;gap:4px!important;padding:0!important}.day-date>span:first-child{min-width:0;text-align:center}
+.day-humidity{display:grid;justify-items:center;align-content:center;gap:2px}.day-humidity .humidity-note{font-size:6px;padding:2px 3px}
+@media(max-width:390px){.week-head,.day-row{grid-template-columns:minmax(68px,1.16fr) 29px 42px 42px 39px 42px 45px!important}.day-date{gap:3px!important}.day-date .weekday{width:19px!important;height:19px!important;min-width:19px!important;font-size:9px!important}.day-humidity .humidity-note{font-size:5.5px}.hour-day-divider{flex-basis:54px}.hour-day-divider strong{font-size:10px}.hour-day-divider small{font-size:7px}}
+
+
+/* v1.21 hourly row + day divider fix */
+.hourly-row-labels span:nth-child(1){background:linear-gradient(180deg,#33506d,#2b4158)!important;color:#ffffff!important}
+.hour-time{background:linear-gradient(180deg,#2b3744,#242c35)!important;color:#ffffff!important}
+.hour-time strong{font-size:12px!important;font-weight:950!important}
+.hour-day-divider{flex:0 0 68px!important;min-height:316px!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:4px!important;padding:6px 4px!important;background:linear-gradient(180deg,#273747,#202a34)!important;border-right:1px solid #405264!important;border-left:1px solid #405264!important;color:#f3f7fb!important;text-align:center!important}
+.hour-day-divider strong{font-size:12px!important;font-weight:950!important;line-height:1.2!important;white-space:nowrap!important}
+.hour-day-divider small{display:block!important;font-size:8px!important;color:#b9c9d8!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important;white-space:nowrap!important;letter-spacing:0!important;line-height:1.2!important}
+@media(max-width:390px){.hour-day-divider{flex-basis:64px!important}.hour-day-divider strong{font-size:11px!important}.hour-day-divider small{font-size:7px!important}}
+
+
+/* v1.22 registered-location tabs + day-divider weekday badges */
+.saved-location-box{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.09)}
+.saved-location-head{margin-bottom:6px}
+.saved-location-list{display:flex;align-items:stretch;gap:2px;overflow-x:auto;padding:0 0 1px;border-bottom:1px solid #34495f;scrollbar-width:none}
+.saved-location-list::-webkit-scrollbar{display:none}
+.saved-location-empty{padding:8px 4px;color:#7f92a6;font-size:9px}
+.saved-location-tab{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 22px;align-items:center;flex:1 1 0;min-width:68px;max-width:150px;background:#14283d;border:1px solid #304860;border-bottom:0;border-radius:8px 8px 0 0;overflow:hidden;opacity:.76}
+.saved-location-tab::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:transparent}
+.saved-location-tab.active{background:#1d3e5d;border-color:#4f85b9;opacity:1}
+.saved-location-tab.active::after{background:#66b5ff}
+.saved-location-open{min-width:0;padding:9px 4px 9px 8px;text-align:center}
+.saved-location-open span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px;font-weight:900;color:#e8f2fc}
+.saved-location-remove{padding:8px 5px 8px 0;color:#8da5bc;font-size:12px}
+.saved-location-tab.active .saved-location-remove{color:#b9d3ec}
+.hour-day-divider{flex:0 0 88px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;background:linear-gradient(180deg,#24384b,#1a2836);border-right:1px solid #425568;border-left:1px solid #425568;color:#f4f8fc}
+.hour-day-divider strong{font-size:15px;line-height:1;font-weight:950;letter-spacing:.02em}
+.hour-day-date{display:flex;align-items:center;justify-content:center;gap:5px;font-size:10px;color:#c8d4df;white-space:nowrap}
+.hour-weekday{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:999px;border:1px solid #60788f;background:#27394b;color:#e6eef6;font-size:10px;font-weight:900}
+.hour-weekday.sun{color:#ffaaaa;border-color:#8d4e53;background:#43252a}
+.hour-weekday.sat{color:#9fc3ff;border-color:#4b6792;background:#24324a}
+@media(max-width:520px){
+  .saved-location-tab{min-width:66px;max-width:120px}
+  .saved-location-open span{font-size:9px}
+  .hour-day-divider{flex-basis:82px}
+  .hour-day-divider strong{font-size:14px}
+  .hour-day-date{font-size:9px;gap:4px}
+  .hour-weekday{width:20px;height:20px;font-size:9px}
+}
+
+
+/* v1.23: registered-location tabs stay visible at the top */
+.saved-tabs-sticky[hidden]{display:none!important}
+.saved-tabs-sticky{
+  position:sticky;
+  top:calc(60px + env(safe-area-inset-top));
+  z-index:495;
+  background:rgba(18,39,62,.97);
+  border-top:1px solid rgba(255,255,255,.04);
+  border-bottom:1px solid #34506c;
+  box-shadow:0 5px 14px rgba(0,0,0,.20);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+.top-location-tabs{
+  display:flex;
+  gap:0;
+  overflow-x:auto;
+  padding:0 8px;
+  min-height:44px;
+  scrollbar-width:none;
+  align-items:stretch;
+}
+.top-location-tabs::-webkit-scrollbar{display:none}
+.top-location-tabs .saved-location-tab{
+  flex:0 0 auto;
+  min-width:96px;
+  max-width:150px;
+  height:44px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 22px;
+  align-items:center;
+  position:relative;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  opacity:.68;
+}
+.top-location-tabs .saved-location-tab::after{
+  content:"";
+  position:absolute;
+  left:10px;right:10px;bottom:0;
+  height:3px;
+  border-radius:3px 3px 0 0;
+  background:transparent;
+}
+.top-location-tabs .saved-location-tab.active{background:rgba(255,255,255,.035);opacity:1}
+.top-location-tabs .saved-location-tab.active::after{background:#fff}
+.top-location-tabs .saved-location-open{padding:12px 2px 11px 8px;text-align:center}
+.top-location-tabs .saved-location-open span{font-size:12px;font-weight:900;color:#d9e4ef;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-location-tabs .saved-location-tab.active .saved-location-open span{color:#fff}
+.top-location-tabs .saved-location-remove{padding:10px 6px 10px 0;color:#7f95aa;font-size:12px}
+.top-location-tabs .saved-location-tab.active .saved-location-remove{color:#aebed0}
+/* Registration controls remain with search, but tabs are only at the top */
+.saved-location-box{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)}
+.saved-location-head{margin-bottom:0}
+@media(max-width:520px){
+  .saved-tabs-sticky{top:calc(60px + env(safe-area-inset-top))}
+  .top-location-tabs{padding:0 4px;min-height:42px}
+  .top-location-tabs .saved-location-tab{min-width:86px;max-width:128px;height:42px}
+  .top-location-tabs .saved-location-open span{font-size:11px}
+}
+
+
+/* v1.24: top header + location tabs stay fixed together; active tab stronger */
+.top-stack{
+  position:sticky;
+  top:0;
+  z-index:900;
+  background:var(--navy);
+  box-shadow:0 5px 16px rgba(0,0,0,.24);
+}
+.top-stack .topbar{
+  position:relative!important;
+  top:auto!important;
+  z-index:2;
+  box-shadow:none;
+}
+.top-stack .saved-tabs-sticky{
+  position:relative!important;
+  top:auto!important;
+  z-index:1;
+  background:#142942;
+  border-top:1px solid rgba(255,255,255,.045);
+  border-bottom:1px solid #3b5a78;
+  box-shadow:none;
+}
+.top-location-tabs{padding:0 6px;min-height:46px}
+.top-location-tabs .saved-location-tab{
+  height:46px;
+  min-width:90px;
+  max-width:150px;
+  opacity:.62;
+  transition:background .16s ease,opacity .16s ease,box-shadow .16s ease;
+}
+.top-location-tabs .saved-location-tab.active{
+  opacity:1;
+  background:linear-gradient(180deg,rgba(69,145,218,.28),rgba(32,89,143,.18));
+  box-shadow:inset 0 0 0 1px rgba(112,184,255,.16);
+}
+.top-location-tabs .saved-location-tab.active::after{
+  left:6px;right:6px;height:4px;
+  background:#6fc0ff;
+  box-shadow:0 -1px 8px rgba(80,175,255,.55);
+}
+.top-location-tabs .saved-location-tab.active::before{
+  content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);
+  width:4px;height:4px;border-radius:50%;background:#83caff;opacity:.95;
+}
+.top-location-tabs .saved-location-open span{color:#b9c9d9;font-weight:850}
+.top-location-tabs .saved-location-tab.active .saved-location-open span{color:#fff;font-weight:950;text-shadow:0 1px 7px rgba(82,168,255,.28)}
+@media(max-width:520px){
+  .top-location-tabs{padding:0 3px;min-height:44px}
+  .top-location-tabs .saved-location-tab{height:44px;min-width:84px;max-width:124px}
+  .top-location-tabs .saved-location-open{padding-top:13px;padding-bottom:10px}
+}
+
+
+/* v1.25: always-visible fixed header + stronger active location tab */
+.top-stack{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  transform:translateX(-50%);
+  width:min(100vw,860px);
+  z-index:3000!important;
+  background:var(--navy);
+  box-shadow:0 7px 20px rgba(0,0,0,.34);
+  isolation:isolate;
+}
+.top-stack-spacer{
+  display:block;
+  width:100%;
+  height:var(--sorafit-top-stack-height,104px);
+  pointer-events:none;
+}
+.top-stack .topbar{position:relative!important;top:auto!important}
+.top-stack .saved-tabs-sticky{position:relative!important;top:auto!important}
+.top-location-tabs .saved-location-tab.active{
+  background:linear-gradient(180deg,#285d8c 0%,#1d4569 100%)!important;
+  opacity:1!important;
+  box-shadow:inset 0 0 0 1px rgba(126,199,255,.32),0 0 14px rgba(56,145,226,.12)!important;
+}
+.top-location-tabs .saved-location-tab.active::after{
+  height:5px!important;
+  left:5px!important;
+  right:5px!important;
+  background:#83d0ff!important;
+  box-shadow:0 -2px 10px rgba(87,190,255,.65)!important;
+}
+.top-location-tabs .saved-location-tab.active .saved-location-open span{
+  color:#fff!important;
+  font-weight:950!important;
+}
+@media(max-width:520px){
+  .top-stack{width:100vw}
+}
+
+
+/* v1.26: fixed tabs only; hide brand/title/catch copy/header icon */
+.tabs-only-stack{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  width:min(100vw,860px)!important;
+  z-index:3000!important;
+  background:#142942!important;
+  box-shadow:0 5px 16px rgba(0,0,0,.34)!important;
+}
+.tabs-only-stack .tabs-only-nav{
+  position:relative!important;
+  top:auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 46px;
+  align-items:stretch;
+  padding-top:env(safe-area-inset-top);
+  background:#142942!important;
+  border-top:0!important;
+  border-bottom:1px solid #3b5a78!important;
+}
+.tabs-only-stack .tabs-only-nav[hidden]{display:none!important}
+.tabs-only-stack .top-location-tabs{
+  min-width:0;
+  min-height:48px;
+  height:48px;
+  padding:0 4px!important;
+  overflow-x:auto;
+  overflow-y:hidden;
+}
+.tabs-only-stack .top-location-tabs .saved-location-tab{
+  height:48px!important;
+  min-width:92px!important;
+  max-width:148px!important;
+}
+.tabs-only-stack .top-location-tabs .saved-location-tab.active{
+  background:linear-gradient(180deg,#2d689c 0%,#214e75 100%)!important;
+  box-shadow:inset 0 0 0 1px rgba(134,205,255,.34),0 0 16px rgba(57,150,229,.18)!important;
+}
+.tabs-only-stack .top-location-tabs .saved-location-tab.active::after{
+  height:5px!important;
+  left:5px!important;
+  right:5px!important;
+  background:#8ed8ff!important;
+  box-shadow:0 -2px 10px rgba(92,197,255,.72)!important;
+}
+.tabs-only-stack .top-location-tabs .saved-location-tab.active .saved-location-open span{
+  color:#fff!important;
+  font-weight:950!important;
+}
+.tabs-refresh-btn{
+  width:46px;
+  min-width:46px;
+  border:0;
+  border-left:1px solid rgba(255,255,255,.08);
+  background:#18314e;
+  color:#eaf5ff;
+  font-size:22px;
+  font-weight:900;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+}
+.tabs-refresh-btn:active{background:#214568}
+@media(max-width:520px){
+  .tabs-only-stack{width:100vw!important}
+  .tabs-only-stack .tabs-only-nav{grid-template-columns:minmax(0,1fr) 44px}
+  .tabs-only-stack .top-location-tabs{height:46px;min-height:46px}
+  .tabs-only-stack .top-location-tabs .saved-location-tab{height:46px!important;min-width:86px!important;max-width:128px!important}
+  .tabs-refresh-btn{width:44px;min-width:44px;font-size:21px}
+}
+
+
+/* v1.28 FINAL cleanup */
+.access-card>img{display:none!important}
+.install-app-row{grid-template-columns:minmax(0,1fr) auto!important}
+.install-app-icon{display:none!important}
+@media(max-width:560px){.install-app-row{grid-template-columns:minmax(0,1fr)!important}.install-btn{grid-column:1!important}}
+
+/* v1.29 FINAL: install + scheduled Web Push */
+.push-settings-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.09)}
+.push-settings-copy{min-width:0;flex:1}.push-settings-copy h2{margin:3px 0 5px;font-size:18px;line-height:1.3}.push-settings-copy p{margin:0;color:#b8c4d3;font-size:13px;line-height:1.55}
+.push-location-text{margin-top:7px;color:#8fcfff;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.push-btn{flex:0 0 auto;min-width:102px;border:1px solid rgba(96,190,255,.34);border-radius:13px;padding:11px 14px;background:#255a83;color:#fff;font-weight:800;font-size:14px;box-shadow:none}
+.push-btn.is-on{background:#173f5f;border-color:#69c4ff;color:#fff}.push-btn:disabled{opacity:.5}
+@media(max-width:520px){.push-settings-row{align-items:flex-start}.push-settings-copy h2{font-size:17px}.push-btn{min-width:94px;padding:10px 11px}}
+
+</style>
+  <meta name="sorafit-version" content="1.30-final" />
+</head>
+<body class="locked">
+  <div id="accessGate" class="access-gate" hidden>
+    <div class="access-card">
+      <div class="eyebrow">限定公開</div>
+      <h1>招待コードを入力</h1>
+      <p>共有されたコードを入力すると、SoraFitを利用できます。</p>
+      <form id="accessForm" class="access-form">
+        <input id="accessCodeInput" type="password" inputmode="latin" autocomplete="one-time-code" placeholder="招待コード" aria-label="招待コード" />
+        <button type="submit">SoraFitを開く</button>
+      </form>
+      <div id="accessError" class="access-error" aria-live="polite"></div>
+      <div class="access-code-hint">共有相手だけにURLとコードを伝える使い方を想定しています。</div>
+      <div class="access-note">※ 簡易な限定公開です。強固な認証ではありません。</div>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <div id="topStack" class="top-stack tabs-only-stack">
+      <nav id="savedTabsBar" class="saved-tabs-sticky tabs-only-nav" aria-label="登録地点タブ" hidden>
+        <div id="savedLocations" class="saved-location-list top-location-tabs" aria-label="登録地点"></div>
+        <button id="refreshBtn" class="tabs-refresh-btn" type="button" aria-label="天気を更新" title="更新">↻</button>
+      </nav>
+    </div>
+    <div id="topStackSpacer" class="top-stack-spacer" aria-hidden="true"></div>
+
+    <main>
+      <section class="location-panel">
+        <div class="location-current">
+          <span class="location-pin">●</span>
+          <div>
+            <div class="eyebrow">表示地点</div>
+            <div id="locationName" class="location-name">地域を設定してください</div>
+          </div>
+          <button id="gpsBtn" class="mini-action" type="button">現在地</button>
+        </div>
+        <form id="searchForm" class="search-row">
+          <label class="sr-only" for="locationInput">市町村名を入力</label>
+          <input id="locationInput" autocomplete="address-level2" placeholder="市町村を検索　例：南相馬市" />
+          <button class="search-btn" type="submit">検索</button>
+        </form>
+        <div id="searchResults" class="search-results" hidden></div>
+        <div class="saved-location-box">
+          <div class="saved-location-head">
+            <div><strong>登録地点</strong><small>最大5か所</small></div>
+            <button id="saveLocationBtn" class="saved-location-add" type="button">＋この地点を登録</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="statusBox" class="status-box" aria-live="polite">
+        <strong>まず地域を設定してください。</strong>
+        <span>市町村検索または「現在地」から始められます。</span>
+      </section>
+
+      <section id="dashboard" hidden>
+        <section class="weather-overview card dark-card">
+          <div class="overview-grid">
+            <article class="today-panel">
+              <div id="todayLabel" class="overview-date">今日</div>
+              <div id="heroWeatherIcon" class="overview-icon" aria-hidden="true"></div>
+              <div id="todayWeatherText" class="overview-weather">—</div>
+              <div class="overview-temp-line">
+                <strong id="maxTemp" class="temp-high">—</strong>
+                <span id="minTemp" class="temp-low">—</span>
+                <span id="rainChance" class="overview-rain">☂ —</span>
+              </div>
+            </article>
+            <div class="next-days-stack">
+              <article class="mini-day tomorrow-panel">
+                <div id="tomorrowWeatherIcon" class="overview-icon" aria-hidden="true"></div>
+                <div class="mini-copy">
+                  <div id="tomorrowLabel" class="overview-date">明日</div>
+                  <div id="tomorrowWeatherText" class="overview-weather">—</div>
+                  <div class="overview-temp-line">
+                    <strong id="tomorrowMax" class="temp-high">—</strong><span id="tomorrowMin" class="temp-low">—</span><span id="tomorrowRain" class="overview-rain">☂ —</span>
+                  </div>
+                </div>
+              </article>
+              <article class="mini-day dayafter-panel">
+                <div id="dayAfterWeatherIcon" class="overview-icon" aria-hidden="true"></div>
+                <div class="mini-copy">
+                  <div id="dayAfterLabel" class="overview-date">明後日</div>
+                  <div id="dayAfterWeatherText" class="overview-weather">—</div>
+                  <div class="overview-temp-line">
+                    <strong id="dayAfterMax" class="temp-high">—</strong><span id="dayAfterMin" class="temp-low">—</span><span id="dayAfterRain" class="overview-rain">☂ —</span>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="action-advice">
+            <div class="action-advice-title">今日のおすすめ</div>
+            <div class="decision-grid">
+              <div class="decision-item"><span>👕</span><small>服装</small><strong id="clothesText">—</strong></div>
+              <div class="decision-item"><span>🧥</span><small>アウター</small><strong id="outerText">—</strong></div>
+              <div class="decision-item"><span>☂️</span><small>傘</small><strong id="umbrellaText">—</strong></div>
+            </div>
+            <div class="rain-message">
+              <span>🌧️</span>
+              <div><small>雨の時間</small><strong id="rainTimingText">—</strong></div>
+            </div>
+            <div id="weatherAlertText" class="weather-alert" hidden></div>
+            <p id="adviceText" class="advice-text"></p>
+            <button id="speakBtn" class="voice-btn" type="button" disabled>🔊 朝の概要を聞く</button>
+            <div id="morningSummaryText" class="morning-summary-bubble" hidden></div>
+            <div id="sourceStamp" class="source-stamp"></div>
+          </div>
+        </section>
+
+        <section class="card dark-card hourly-card-shell">
+          <div class="section-head compact-head">
+            <div>
+              <div class="eyebrow">現在〜約48時間</div>
+              <h2>時間ごとの天気</h2>
+            </div>
+            <span class="pill">左右にスクロール</span>
+          </div>
+          <div class="hourly-board">
+            <div class="hourly-row-labels" aria-hidden="true">
+              <span>時刻</span>
+              <span>天気</span>
+              <span>気温</span>
+              <span>降水確率</span>
+              <span>1時間雨量</span>
+              <span>湿度</span>
+              <span>風速</span>
+            </div>
+            <div id="hourlyList" class="hourly-list" tabindex="0" aria-label="48時間の1時間ごとの天気予報。各時間の1時間雨量を含みます"></div>
+          </div>
+        </section>
+
+        <section class="card dark-card weekly-card">
+          <div class="section-head compact-head">
+            <div>
+              <div class="eyebrow">この先最大16日</div>
+              <h2>週間天気</h2>
+            </div>
+          </div>
+          <p class="forecast-range-note">8日目以降は参考予報です。遠い日ほど予報は変わりやすくなります。</p>
+          <div class="weekly-scroll" aria-label="最大16日間の天気予報">
+            <div class="weekly-table">
+              <div class="week-head" aria-hidden="true"><span>日付</span><span>天気</span><span>最高</span><span>最低</span><span>降水</span><span>湿度</span><span>風速</span></div>
+              <div id="dailyList" class="daily-list"></div>
+            </div>
+          </div>
+          <p class="section-note">降水確率は1日の最大値、湿度は1日の平均値、風速はその日の最大風速です。暑さ・寒さのコメントは最高・最低気温の下に表示します。「風強め」は生活上の目安で、気象庁の注意報とは異なります。</p>
+        </section>
+        <section class="card dark-card external-weather-card">
+          <div class="section-head compact-head">
+            <div>
+              <div class="eyebrow">外部サービスで確認</div>
+              <h2>雨雲レーダー</h2>
+            </div>
+            <span class="pill">ワンタップ</span>
+          </div>
+          <p class="external-weather-intro">最新の雨雲の動きは、見慣れた公式サービスで確認できます。SoraFit内にはレーダーを常時表示しません。</p>
+          <div class="weather-link-grid">
+            <a id="radarYahooBtn" class="weather-link-btn weather-link-yahoo" href="https://weather.yahoo.co.jp/weather/zoomradar/" target="_blank" rel="noopener">
+              <span class="weather-link-icon" aria-hidden="true">🌧️</span>
+              <span class="weather-link-copy"><strong>Yahoo!天気</strong><small>選択地点の雨雲レーダー</small></span>
+              <span class="weather-link-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="weather-link-btn weather-link-jma" href="https://www.jma.go.jp/bosai/nowc/" target="_blank" rel="noopener">
+              <span class="weather-link-icon" aria-hidden="true">🛰️</span>
+              <span class="weather-link-copy"><strong>気象庁</strong><small>雨雲の動き・ナウキャスト</small></span>
+              <span class="weather-link-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="card dark-card external-weather-card">
+          <div class="section-head compact-head">
+            <div>
+              <div class="eyebrow">外部サービスで確認</div>
+              <h2>台風情報</h2>
+            </div>
+            <span class="pill">最新情報</span>
+          </div>
+          <p class="external-weather-intro">台風の現在位置・進路予報・予報円は、Yahoo!天気または気象庁の最新情報を開いて確認できます。</p>
+          <div class="weather-link-grid">
+            <a class="weather-link-btn weather-link-yahoo" href="https://typhoon.yahoo.co.jp/weather/jp/typhoon/" target="_blank" rel="noopener">
+              <span class="weather-link-icon" aria-hidden="true">🌀</span>
+              <span class="weather-link-copy"><strong>Yahoo!天気</strong><small>台風の進路・最新情報</small></span>
+              <span class="weather-link-arrow" aria-hidden="true">↗</span>
+            </a>
+            <a class="weather-link-btn weather-link-jma" href="https://www.jma.go.jp/bosai/map.html#contents=typhoon" target="_blank" rel="noopener">
+              <span class="weather-link-icon" aria-hidden="true">🗾</span>
+              <span class="weather-link-copy"><strong>気象庁</strong><small>台風経路図・防災情報</small></span>
+              <span class="weather-link-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="card dark-card current-card">
+          <div class="section-head compact-head">
+            <div><div class="eyebrow">いま</div><h2>現在の予報値</h2></div>
+            <span id="currentWeatherLabel" class="pill">—</span>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><span>気温</span><strong id="currentTemp">—</strong></div>
+            <div class="metric"><span>体感</span><strong id="currentFeels">—</strong></div>
+            <div class="metric"><span>湿度</span><strong id="currentHumidity">—</strong></div>
+            <div class="metric"><span>風速</span><strong id="currentWind">—</strong></div>
+          </div>
+        </section>
+
+        <section class="card dark-card install-card" id="installCard">
+          <div class="install-app-row">
+            <div class="install-app-copy">
+              <div class="eyebrow">ホーム画面へ</div>
+              <h2>SoraFitをアプリとして使う</h2>
+              <p id="installHint">HTTPS公開版は、スマホのホーム画面へ追加してアプリのように使えます。</p>
+            </div>
+            <button id="installBtn" class="install-btn" type="button">インストール</button>
+          </div>
+          <div class="push-settings-row">
+            <div class="push-settings-copy">
+              <div class="eyebrow">毎朝6:00</div>
+              <h2>朝の天気をプッシュ通知</h2>
+              <p id="pushHint">通知をONにすると、毎朝6時ごろに最後に表示した地点の朝の概要を通知します。</p>
+              <div id="pushLocationText" class="push-location-text">通知地点：—</div>
+            </div>
+            <button id="pushBtn" class="push-btn" type="button">通知をON</button>
+          </div>
+        </section>
+
+        <section class="card dark-card settings-card">
+          <div class="section-head compact-head"><div><div class="eyebrow">服装・傘判定</div><h2>外出時間</h2></div></div>
+          <div class="time-settings">
+            <label>外出 <input id="startHour" type="time" step="3600" value="07:00" /></label>
+            <label>帰宅 <input id="endHour" type="time" step="3600" value="19:00" /></label>
+            <button id="saveSettingsBtn" class="compact-control" type="button">保存</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <footer>
+      <p>天気：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>（CC BY 4.0 / Best Match）</p>
+      <p>雨雲・台風：<a href="https://weather.yahoo.co.jp/" target="_blank" rel="noopener">Yahoo!天気・災害</a> ／ <a href="https://www.jma.go.jp/" target="_blank" rel="noopener">気象庁</a>（外部リンク）</p>
+      <p>気温・湿度・風などの「現在」表示も観測値ではなくOpen-Meteoのモデル値です。服装・傘・最接近時刻は生活判断用の目安です。防災判断は気象庁等の公式情報を確認してください。</p>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  
+<script>
+(function(){
+  const ACCESS_KEY='sorafit.access.v1';
+  const ACCESS_CODE='sorafit2026';
+  function setLocked(locked){
+    document.body.classList.toggle('locked', locked);
+    const gate=document.getElementById('accessGate');
+    if(gate) gate.hidden=!locked;
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    let allowed=false;
+    try{allowed=localStorage.getItem(ACCESS_KEY)==='ok';}catch(e){}
+    setLocked(!allowed);
+    const form=document.getElementById('accessForm');
+    const input=document.getElementById('accessCodeInput');
+    const error=document.getElementById('accessError');
+    if(!form || !input) return;
+    form.addEventListener('submit', function(ev){
+      ev.preventDefault();
+      const code=(input.value||'').trim();
+      if(code===ACCESS_CODE){
+        try{localStorage.setItem(ACCESS_KEY,'ok');}catch(e){}
+        if(error) error.textContent='';
+        setLocked(false);
+      }else{
+        if(error) error.textContent='招待コードが違います。';
+        input.select();
+      }
+    });
+  });
+})();
+</script>
+  <script>
+(function (global) {
+  'use strict';
+
+  
+  const WMO = {
+    0: '快晴', 1: '晴れ', 2: '晴れ時々曇り', 3: '曇り',
+    45: '霧', 48: '着氷性の霧',
+    51: '弱い霧雨', 53: '霧雨', 55: '強い霧雨',
+    56: '弱い着氷性霧雨', 57: '強い着氷性霧雨',
+    61: '弱い雨', 63: '雨', 65: '強い雨',
+    66: '弱い着氷性の雨', 67: '強い着氷性の雨',
+    71: '弱い雪', 73: '雪', 75: '強い雪', 77: '雪あられ',
+    80: '弱いにわか雨', 81: 'にわか雨', 82: '激しいにわか雨',
+    85: '弱いにわか雪', 86: '強いにわか雪',
+    95: '雷雨', 96: '雷雨・ひょう', 97: '激しい雷雨', 99: '激しい雷雨・ひょう'
+  };
+
+  const RAIN_CODES = new Set([51,53,55,56,57,61,63,65,66,67,80,81,82,95,96,97,99]);
+  const SNOW_CODES = new Set([71,73,75,77,85,86]);
+
+  function iconSVG(kind) {
+    const base = {
+      sun: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="none" stroke="#f7b430" stroke-width="3" stroke-linecap="round"><path d="M32 6v8M32 50v8M10 32h8M46 32h8M15.5 15.5l5.5 5.5M43 43l5.5 5.5M15.5 48.5l5.5-5.5M43 21l5.5-5.5" opacity=".9"/></g><circle cx="32" cy="32" r="13" fill="#ffc83d" stroke="#f3a321" stroke-width="2.5"/></svg>`,
+      cloud: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="#e8eef5" stroke="#cad5e2" stroke-width="2.2"><path d="M20 47h24c6.3 0 11-4.2 11-10 0-5.7-4.6-10.2-10.5-10.2-.8 0-1.6.1-2.4.3C40.7 20.8 35.6 17 29.6 17c-7.1 0-13 5.4-13.8 12.3-.4-.1-.9-.1-1.3-.1-5.2 0-9.5 4-9.5 8.9S9.3 47 14.6 47H20z"/></g></svg>`,
+      partly: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="none" stroke="#f7b430" stroke-width="2.6" stroke-linecap="round" opacity=".95"><path d="M24 10v6M24 32v6M12 24h6M30 24h6M16 16l4 4M28 28l4 4M16 32l4-4M28 20l4-4"/></g><circle cx="24" cy="24" r="10.5" fill="#ffc83d" stroke="#f3a321" stroke-width="2"/><g fill="#edf2f8" stroke="#cad5e2" stroke-width="2"><path d="M24 49h22c5.6 0 9.7-3.8 9.7-8.9 0-5.1-4.1-9.1-9.3-9.1-.7 0-1.4.1-2 .2C43.3 25.7 38.7 22 33.4 22c-6.3 0-11.4 4.9-11.8 11.1C16.9 33.5 13 37 13 41.3 13 45.7 16.8 49 21.7 49H24z"/></g></svg>`,
+      rain: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="#e8eef5" stroke="#cad5e2" stroke-width="2.2"><path d="M20 41h24c6.3 0 11-4.2 11-10 0-5.7-4.6-10.2-10.5-10.2-.8 0-1.6.1-2.4.3C40.7 14.8 35.6 11 29.6 11c-7.1 0-13 5.4-13.8 12.3-.4-.1-.9-.1-1.3-.1-5.2 0-9.5 4-9.5 8.9S9.3 41 14.6 41H20z"/></g><g fill="#61b4ff"><path d="M22 45c2.4 4.4 2.4 6.2 0 8.6-2-1.9-2-4.2 0-8.6z"/><path d="M33 45c2.4 4.4 2.4 6.2 0 8.6-2-1.9-2-4.2 0-8.6z"/><path d="M44 45c2.4 4.4 2.4 6.2 0 8.6-2-1.9-2-4.2 0-8.6z"/></g></svg>`,
+      partly_rain: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="none" stroke="#f7b430" stroke-width="2.6" stroke-linecap="round" opacity=".95"><path d="M21 9v5M21 29v5M11 19h5M26 19h5M14 12l3 3M25 23l3 3M14 26l3-3M25 15l3-3"/></g><circle cx="21" cy="19" r="9" fill="#ffc83d" stroke="#f3a321" stroke-width="2"/><g fill="#edf2f8" stroke="#cad5e2" stroke-width="2"><path d="M23 42h21c5.5 0 9.6-3.7 9.6-8.6 0-4.9-4-8.9-9.1-8.9-.7 0-1.4.1-2 .2C42.3 19.6 37.8 16 32.7 16c-6.1 0-11.1 4.8-11.4 10.7-4.6.4-8.2 3.7-8.2 7.9 0 4.1 3.6 7.4 8.2 7.4z"/></g><g fill="#61b4ff"><path d="M25 45c2.1 3.8 2.1 5.4 0 7.5-1.8-1.6-1.8-3.7 0-7.5z"/><path d="M36 45c2.1 3.8 2.1 5.4 0 7.5-1.8-1.6-1.8-3.7 0-7.5z"/></g></svg>`,
+      thunder: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="#e8eef5" stroke="#cad5e2" stroke-width="2.2"><path d="M20 40h24c6.3 0 11-4.2 11-10 0-5.7-4.6-10.2-10.5-10.2-.8 0-1.6.1-2.4.3C40.7 13.8 35.6 10 29.6 10c-7.1 0-13 5.4-13.8 12.3-.4-.1-.9-.1-1.3-.1-5.2 0-9.5 4-9.5 8.9S9.3 40 14.6 40H20z"/></g><path d="M33 42l-7 10h5l-3 10 12-15h-6l4-5z" fill="#ffca3a" stroke="#f0a600" stroke-width="1.5"/></svg>`,
+      fog: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="#edf2f8" stroke="#cad5e2" stroke-width="2"><path d="M22 34h21c5.7 0 10-3.9 10-9.1 0-5.2-4.2-9.1-9.5-9.1-.7 0-1.4.1-2.1.2C40.2 10.7 35.3 7 29.7 7c-6.6 0-12 5.1-12.6 11.7-.4-.1-.9-.1-1.3-.1-4.9 0-8.8 3.8-8.8 8.4 0 4.7 3.9 8.4 8.8 8.4z"/></g><g stroke="#cfd8e3" stroke-width="3" stroke-linecap="round" opacity=".95"><path d="M14 42h36"/><path d="M10 49h44"/><path d="M18 56h30"/></g></svg>`,
+      snow: `<svg viewBox="0 0 64 64" class="wx-ico" aria-hidden="true"><g fill="#edf2f8" stroke="#cad5e2" stroke-width="2"><path d="M20 39h24c6.1 0 10.7-4.1 10.7-9.7s-4.6-9.7-10.2-9.7c-.8 0-1.5.1-2.2.2C41.8 14.5 36.6 11 30.6 11c-6.9 0-12.7 5.2-13.4 11.9h-1c-5 0-9.1 3.8-9.1 8.5s4.1 8.5 9.1 8.5H20z"/></g><g stroke="#8ed3ff" stroke-width="2.4" stroke-linecap="round"><path d="M24 47v8M20 51h8M21 48l6 6M27 48l-6 6"/><path d="M40 47v8M36 51h8M37 48l6 6M43 48l-6 6"/></g></svg>`
+    };
+    return base[kind] || base.partly;
+  }
+
+  function iconKind(code) {
+    const c = Number(code);
+    if ([0].includes(c)) return 'sun';
+    if ([1,2].includes(c)) return 'partly';
+    if ([3].includes(c)) return 'cloud';
+    if ([45,48].includes(c)) return 'fog';
+    if ([51,53].includes(c)) return 'partly_rain';
+    if ([55,56,57,61,63,65,66,67,80,81].includes(c)) return 'rain';
+    if ([82,95,96,97,99].includes(c)) return 'thunder';
+    if ([71,73,75,77,85,86].includes(c)) return 'snow';
+    return 'partly';
+  }
+
+  function weatherInfo(code) {
+    const c = Number(code);
+    return [WMO[c] || '天気情報', iconSVG(iconKind(c))];
+  }
+
+  function thermalComment(minFeels, maxFeels) {
+    const mid = (Number(minFeels) + Number(maxFeels)) / 2;
+    if (mid >= 29) return { label:'かなり暑い', cls:'hot', voice:'日中はかなり暑く感じそうです' };
+    if (mid >= 25) return { label:'暑め', cls:'warm', voice:'日中は少し暑く感じそうです' };
+    if (mid >= 20) return { label:'快適', cls:'comfy', voice:'気温はおおむね過ごしやすそうです' };
+    if (mid >= 15) return { label:'やや涼しい', cls:'cool', voice:'少し涼しく感じる時間がありそうです' };
+    if (mid >= 10) return { label:'肌寒い', cls:'cold', voice:'肌寒く感じそうです' };
+    return { label:'寒い', cls:'cold', voice:'かなり寒く感じそうです' };
+  }
+
+  function round1(value) {
+    return Math.round(Number(value) * 10) / 10;
+  }
+
+  function toHour(value, fallback) {
+    if (!value || !/^\d{2}:\d{2}$/.test(value)) return fallback;
+    return Math.max(0, Math.min(23, Number(value.split(':')[0])));
+  }
+
+  function indexesForDate(times, dateStr) {
+    const out = [];
+    times.forEach((t, i) => {
+      if (String(t).slice(0, 10) === dateStr) out.push(i);
+    });
+    return out;
+  }
+
+  function outingIndexes(hourly, dateStr, startTime, endTime) {
+    const start = toHour(startTime, 7);
+    const end = toHour(endTime, 19);
+    return indexesForDate(hourly.time, dateStr).filter(i => {
+      const hour = Number(String(hourly.time[i]).slice(11, 13));
+      return start <= end ? hour >= start && hour <= end : (hour >= start || hour <= end);
+    });
+  }
+
+  // precipitation / precipitation_probability are values for the preceding hour.
+  // For an outing window 07:00-19:00, use timestamps 08:00..19:00
+  // (representing 07-08 .. 18-19), not 07:00..19:00.
+  function outingPrecipIndexes(hourly, dateStr, startTime, endTime) {
+    const start = toHour(startTime, 7);
+    const end = toHour(endTime, 19);
+    return indexesForDate(hourly.time, dateStr).filter(i => {
+      const hour = Number(String(hourly.time[i]).slice(11, 13));
+      if (!Number.isFinite(hour) || hour <= 0) return false;
+      const intervalStart = hour - 1;
+      const intervalEnd = hour;
+      return start <= end
+        ? intervalStart >= start && intervalEnd <= end
+        : (intervalStart >= start || intervalEnd <= end);
+    });
+  }
+
+  function values(arr, idxs) {
+    return idxs.map(i => Number(arr?.[i])).filter(Number.isFinite);
+  }
+
+  function max(arr, fallback = 0) {
+    return arr.length ? Math.max(...arr) : fallback;
+  }
+
+  function min(arr, fallback = 0) {
+    return arr.length ? Math.min(...arr) : fallback;
+  }
+
+  function baseClothing(feelsMin, feelsMax) {
+    const midpoint = (feelsMin + feelsMax) / 2;
+    if (midpoint >= 30) return { clothes: '半袖・涼しい服', outer: '不要', level: 0 };
+    if (midpoint >= 26) return { clothes: '半袖', outer: '不要', level: 0 };
+    if (midpoint >= 23) return { clothes: '半袖〜薄手長袖', outer: feelsMin < 20 ? '薄手の羽織り' : '不要', level: feelsMin < 20 ? 1 : 0 };
+    if (midpoint >= 20) return { clothes: '長袖', outer: feelsMin < 17 ? '薄手の羽織り' : '不要', level: feelsMin < 17 ? 1 : 0 };
+    if (midpoint >= 16) return { clothes: '長袖', outer: '薄手アウター', level: 2 };
+    if (midpoint >= 12) return { clothes: '長袖・重ね着', outer: 'ジャケット', level: 3 };
+    if (midpoint >= 8) return { clothes: '暖かい服', outer: 'コート', level: 4 };
+    if (midpoint >= 5) return { clothes: 'しっかり防寒', outer: '厚手コート', level: 5 };
+    return { clothes: '冬の防寒着', outer: '冬用アウター', level: 6 };
+  }
+
+  function bumpOuter(label) {
+    const order = ['不要', '薄手の羽織り', '薄手アウター', 'ジャケット', 'コート', '厚手コート', '冬用アウター'];
+    const i = Math.max(0, order.indexOf(label));
+    return order[Math.min(order.length - 1, i + 1)];
+  }
+
+  function umbrellaAdvice(maxProb, maxPrecip, codes, rainyHours = 0) {
+    const rainCode = codes.some(c => RAIN_CODES.has(Number(c)));
+    const snowCode = codes.some(c => SNOW_CODES.has(Number(c)));
+
+    // しっかり降る／降る可能性がかなり高い場合は、携帯性より濡れにくさを優先。
+    if (snowCode && maxPrecip >= 1) {
+      return { text: '普通の傘', level: 3, reason: '雪やみぞれを含む降水が見込まれるため、普通の傘が安心です' };
+    }
+    if (rainyHours >= 3 && maxProb >= 60 && maxPrecip < 2) {
+      return { text: '普通の傘', level: 3, reason: '弱めでも雨が長く続く見込みのため、普通の傘がおすすめです' };
+    }
+    if (maxPrecip >= 3 || (maxProb >= 80 && maxPrecip >= 1) || (rainCode && maxPrecip >= 2)) {
+      return { text: '普通の傘', level: 3, reason: 'しっかりした雨が見込まれるため、折りたたみ傘より普通の傘がおすすめです' };
+    }
+    if (maxProb >= 30 || maxPrecip >= 0.1 || rainCode) {
+      return { text: '折りたたみ傘', level: 2, reason: '弱い雨や一時的な雨に備えて、折りたたみ傘があると安心です' };
+    }
+    return { text: '不要', level: 0, reason: '外出時間帯の雨リスクは低めです' };
+  }
+
+  function analyzeDay(weather, settings) {
+    const dateStr = weather.daily.time[0];
+    let idxs = outingIndexes(weather.hourly, dateStr, settings.startHour, settings.endHour);
+    if (!idxs.length) idxs = indexesForDate(weather.hourly.time, dateStr);
+
+    const precipIdxsRaw = outingPrecipIndexes(weather.hourly, dateStr, settings.startHour, settings.endHour);
+    const precipIdxs = precipIdxsRaw.length ? precipIdxsRaw : idxs;
+    const feels = values(weather.hourly.apparent_temperature, idxs);
+    const temps = values(weather.hourly.temperature_2m, idxs);
+    const humidity = values(weather.hourly.relative_humidity_2m, idxs);
+    const wind = values(weather.hourly.wind_speed_10m, idxs);
+    const gust = values(weather.hourly.wind_gusts_10m, idxs);
+    const prob = values(weather.hourly.precipitation_probability, precipIdxs);
+    const precip = values(weather.hourly.precipitation, precipIdxs);
+    const codes = idxs.map(i => Number(weather.hourly.weather_code?.[i])).filter(Number.isFinite);
+
+    const feelsMin = min(feels, Number(weather.daily.apparent_temperature_min?.[0] ?? weather.daily.temperature_2m_min?.[0]));
+    const feelsMax = max(feels, Number(weather.daily.apparent_temperature_max?.[0] ?? weather.daily.temperature_2m_max?.[0]));
+    const maxWind = max(wind, 0);
+    const maxGust = max(gust, 0);
+    const dailyProb = Number(weather.daily.precipitation_probability_max?.[0] ?? 0);
+    const maxProb = prob.length ? max(prob, 0) : dailyProb;
+    const maxPrecip = max(precip, 0);
+    const clothing = baseClothing(feelsMin, feelsMax);
+
+    const windy = maxWind >= 25 || maxGust >= 40;
+    if (windy && clothing.outer !== '冬用アウター') clothing.outer = bumpOuter(clothing.outer);
+
+    const rainyHours = precip.filter(v => v >= 0.1).length;
+    const umbrella = umbrellaAdvice(maxProb, maxPrecip, codes, rainyHours);
+    const tempRange = Number(weather.daily.temperature_2m_max?.[0]) - Number(weather.daily.temperature_2m_min?.[0]);
+    const humidHot = max(humidity, 0) >= 75 && feelsMax >= 25;
+    const tempComment = thermalComment(feelsMin, feelsMax);
+
+    const notes = [];
+    if (tempComment.label === 'かなり暑い') notes.push('日中はかなり暑く感じそうです。こまめな水分補給を意識すると安心です。');
+    else if (tempComment.label === '暑め') notes.push('日中は少し暑く感じそうです。通気性のよい服だと過ごしやすそうです。');
+    else if (tempComment.label === '肌寒い' || tempComment.label === '寒い') notes.push('空気がひんやりしやすく、肌寒さに注意したい日です。');
+    if (tempRange >= 8) notes.push('朝晩と昼の寒暖差が大きめなので、脱ぎ着しやすい服装がおすすめです。');
+    if (windy) notes.push('風が強めなので、体感温度より少し暖かめの上着が安心です。');
+    if (humidHot) notes.push('湿度が高く蒸し暑く感じやすいため、通気性のよい服が向いています。');
+    if (umbrella.level > 0) notes.push(umbrella.reason + '。');
+    if (!notes.length) notes.push('大きな天候リスクは少なく、気温に合わせた一般的な服装で過ごしやすそうです。');
+
+    return {
+      clothes: clothing.clothes,
+      outer: clothing.outer,
+      outerNeeded: clothing.outer !== '不要',
+      umbrella: umbrella.text,
+      advice: notes.join(' '),
+      feelsMin: round1(feelsMin),
+      feelsMax: round1(feelsMax),
+      tempMin: round1(weather.daily.temperature_2m_min?.[0]),
+      tempMax: round1(weather.daily.temperature_2m_max?.[0]),
+      maxProb: Math.round(maxProb),
+      maxWind: round1(maxWind),
+      maxGust: round1(maxGust),
+      tempComment: tempComment.label,
+      tempCommentClass: tempComment.cls,
+      tempCommentVoice: tempComment.voice,
+      dateStr
+    };
+  }
+
+  function clothingForDaily(minFeels, maxFeels, maxWind) {
+    const c = baseClothing(Number(minFeels), Number(maxFeels));
+    if (Number(maxWind) >= 25) c.outer = bumpOuter(c.outer);
+    const temp = thermalComment(minFeels, maxFeels);
+    return { ...c, tempComment: temp.label, tempCommentClass: temp.cls };
+  }
+
+
+  function hourPhrase(hour) {
+    const h = Number(hour);
+    if (h >= 24) return '日付が変わるころ';
+    return `${Math.max(0, h)}時ごろ`;
+  }
+
+  function rainTiming(weather, dateStr, currentTime) {
+    const hourly = weather?.hourly || {};
+    const idxs = indexesForDate(hourly.time || [], dateStr);
+    const rawSlots = [];
+
+    idxs.forEach(i => {
+      const time = String(hourly.time?.[i] || '');
+      const hour = Number(time.slice(11, 13));
+      const precip = Number(hourly.precipitation?.[i] ?? 0);
+      const code = Number(hourly.weather_code?.[i]);
+
+      // Open-Meteo の hourly precipitation は「直前1時間の合計」。
+      // 例: 16:00 の 0.5mm は、おおむね 15:00〜16:00 の降水を表す。
+      if (Number.isFinite(precip) && precip >= 0.1) {
+        if (hour > 0) rawSlots.push({ start: hour - 1, end: hour, amount: precip });
+        return;
+      }
+
+      // 量が 0 でも天気コードが雨・雪なら、その時刻付近の降水として補完する。
+      if (RAIN_CODES.has(code) || SNOW_CODES.has(code)) {
+        rawSlots.push({ start: hour, end: Math.min(24, hour + 1), amount: precip });
+      }
+    });
+
+    rawSlots.sort((a, b) => a.start - b.start || a.end - b.end);
+    const merged = [];
+    for (const slot of rawSlots) {
+      const last = merged[merged.length - 1];
+      if (!last || slot.start > last.end) {
+        merged.push({ ...slot });
+      } else {
+        last.end = Math.max(last.end, slot.end);
+        last.amount = Math.max(last.amount || 0, slot.amount || 0);
+      }
+    }
+
+    let currentHour = 0;
+    const current = String(currentTime || '');
+    if (current.slice(0, 10) === dateStr && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(current)) {
+      const hh = Number(current.slice(11, 13));
+      const mm = Number(current.slice(14, 16));
+      currentHour = hh + mm / 60;
+    }
+
+    const future = merged.filter(p => p.end > currentHour + 0.01);
+    const futureIdxs = idxs.filter(i => {
+      const h = Number(String(hourly.time?.[i] || '').slice(11, 13));
+      return h >= Math.floor(currentHour);
+    });
+    const futureProb = values(hourly.precipitation_probability, futureIdxs);
+    const maxFutureProb = Math.round(max(futureProb, 0));
+
+    if (!future.length) {
+      if (maxFutureProb >= 30) {
+        return {
+          state: 'possible', periods: [], maxFutureProb,
+          text: '雨の可能性はありますが、降り始める時間はまだはっきりしていません。',
+          voiceText: '雨の可能性はありますが、降り始める時間はまだはっきりしていません'
+        };
+      }
+      return {
+        state: 'none', periods: [], maxFutureProb,
+        text: 'このあと、まとまった雨の予報はありません。',
+        voiceText: 'このあと、まとまった雨の予報はありません'
+      };
+    }
+
+    const phrases = future.slice(0, 2).map((p, index) => {
+      const ongoing = currentHour >= p.start && currentHour < p.end;
+      if (ongoing) return `現在降っていて、${hourPhrase(p.end)}にやむ見込み`;
+      return `${hourPhrase(p.start)}から${hourPhrase(p.end)}まで`;
+    });
+    let text;
+    if (phrases.length === 1) {
+      text = `雨は${phrases[0]}の見込みです。`;
+    } else {
+      text = `雨は${phrases[0]}、その後${phrases[1]}の見込みです。`;
+      if (future.length > 2) text += ' その後も雨の時間帯があります。';
+    }
+    return { state: 'timed', periods: future, maxFutureProb, text, voiceText: text.replace(/。$/, '') };
+  }
+
+
+  function suddenRainRisk(weather, settings, currentTime) {
+    const hourly = weather?.hourly || {};
+    const dateStr = weather?.daily?.time?.[0];
+    if (!dateStr || !hourly.time?.length) {
+      return { level: 0, active: false, label: '', text: '', voiceText: '' };
+    }
+
+    let idxs = outingIndexes(hourly, dateStr, settings?.startHour, settings?.endHour);
+    if (!idxs.length) idxs = indexesForDate(hourly.time, dateStr);
+    let precipIdxs = outingPrecipIndexes(hourly, dateStr, settings?.startHour, settings?.endHour);
+    if (!precipIdxs.length) precipIdxs = idxs.slice();
+
+    // 現在時刻より前は除外し、「このあと」の急変リスクを見る。
+    const current = String(currentTime || '');
+    if (current.slice(0, 10) === dateStr && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(current)) {
+      const hh = Number(current.slice(11, 13));
+      const mm = Number(current.slice(14, 16));
+      const currentHour = hh + mm / 60;
+      idxs = idxs.filter(i => Number(String(hourly.time?.[i] || '').slice(11, 13)) >= hh);
+      // precipitation timestamp is the end of its preceding-hour interval.
+      precipIdxs = precipIdxs.filter(i => Number(String(hourly.time?.[i] || '').slice(11, 13)) > currentHour);
+    }
+    if (!idxs.length && !precipIdxs.length) return { level: 0, active: false, label: '', text: '', voiceText: '' };
+
+    const probs = precipIdxs.map(i => Number(hourly.precipitation_probability?.[i] ?? 0));
+    const precips = precipIdxs.map(i => Number(hourly.precipitation?.[i] ?? 0));
+    const codes = idxs.map(i => Number(hourly.weather_code?.[i]));
+    const showerCodes = new Set([80,81,82]);
+    const thunderCodes = new Set([95,96,97,99]);
+
+    const thunder = codes.some(c => thunderCodes.has(c));
+    const shower = codes.some(c => showerCodes.has(c));
+    const maxProb = probs.length ? Math.max(...probs) : 0;
+    const minProb = probs.length ? Math.min(...probs) : 0;
+    let maxJump = 0;
+    for (let i = 1; i < probs.length; i++) maxJump = Math.max(maxJump, Math.abs(probs[i] - probs[i - 1]));
+
+    // 短時間だけ雨量が出て、その前後が乾いているパターンを「急な雨」の参考にする。
+    let isolatedRain = false;
+    for (let i = 0; i < precips.length; i++) {
+      if (precips[i] < 0.1) continue;
+      const beforeDry = i === 0 || precips[i - 1] < 0.1;
+      const afterDry = i === precips.length - 1 || precips[i + 1] < 0.1;
+      if (beforeDry && afterDry) { isolatedRain = true; break; }
+    }
+
+    if (thunder) {
+      return {
+        level: 3, active: true, label: '急な雷雨に注意',
+        text: '雷を伴う急な雨の予報があります。空模様が急に変わる可能性があるため、外出時は雨具を持っておくと安心です。',
+        voiceText: '雷を伴う急な雨の予報があります。空模様が急に変わる可能性があるため、雨具を持っておくと安心です'
+      };
+    }
+    if (shower) {
+      return {
+        level: 2, active: true, label: 'にわか雨に注意',
+        text: 'にわか雨の予報があります。晴れていても急に降る可能性があるため、外出時は雨具を用意しておくと安心です。',
+        voiceText: 'にわか雨の予報があります。晴れていても急に降る可能性があるため、雨具を用意しておくと安心です'
+      };
+    }
+    if (maxProb >= 40 && ((maxProb - minProb) >= 35 || maxJump >= 30 || isolatedRain)) {
+      return {
+        level: 1, active: true, label: '天気が変わりやすい',
+        text: '時間帯によって雨の可能性が大きく変わる予報です。急な雨に備えて、外出時は雨具を用意しておくと安心です。',
+        voiceText: '今日は天気が変わりやすい予報です。急な雨に備えて、雨具を用意しておくと安心です'
+      };
+    }
+    return { level: 0, active: false, label: '', text: '', voiceText: '' };
+  }
+
+  function rainfallPeak(weather, dateStr, currentTime) {
+    const hourly = weather?.hourly || {};
+    const idxs = indexesForDate(hourly.time || [], dateStr);
+    let currentHour = -1;
+    const current = String(currentTime || '');
+    if (current.slice(0, 10) === dateStr && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(current)) {
+      const hh = Number(current.slice(11, 13));
+      const mm = Number(current.slice(14, 16));
+      currentHour = hh + mm / 60;
+    }
+
+    let peak = null;
+    for (const i of idxs) {
+      const time = String(hourly.time?.[i] || '');
+      const endHour = Number(time.slice(11, 13));
+      if (!Number.isFinite(endHour)) continue;
+      // precipitation はその時刻までの直前1時間合計。終了済みの区間は読み上げ対象から除く。
+      if (currentHour >= 0 && endHour <= currentHour) continue;
+      const amount = Number(hourly.precipitation?.[i] ?? 0);
+      if (!Number.isFinite(amount)) continue;
+      if (!peak || amount > peak.amount) {
+        peak = { amount: round1(amount), start: Math.max(0, endHour - 1), end: endHour, time };
+      }
+    }
+    if (!peak) return { amount: 0, start: null, end: null, text: 'このあと1時間雨量の予測はありません。', voiceText: '' };
+    if (peak.amount < 0.1) return { ...peak, text: 'このあと目立った1時間雨量は予想されていません。', voiceText: '' };
+    return {
+      ...peak,
+      text: `${peak.start}〜${peak.end}時の1時間雨量が最大${peak.amount.toFixed(1)}mmの予報です。`,
+      voiceText: `${peak.start}時から${peak.end}時の1時間雨量は、最大${peak.amount.toFixed(1)}ミリの予報です`
+    };
+  }
+
+  const api = { weatherInfo, analyzeDay, clothingForDaily, outingIndexes, outingPrecipIndexes, baseClothing, umbrellaAdvice, rainTiming, rainfallPeak, suddenRainRisk };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  global.WeatherCore = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+(() => {
+  'use strict';
+
+  const API_FORECAST = 'https://api.open-meteo.com/v1/forecast';
+  const API_GEOCODE = 'https://geocoding-api.open-meteo.com/v1/search';
+  const PUSH_PUBLIC_KEY = 'BENmjJeGmDHbIa3fX6Hs_VPH-gxIhijkYplSh571EfCXz9U3K-hFmE-maz-VasvL7toD01G-zQSZu0g8ckJqshA';
+  const PUSH_API = 'https://ewnckefamfoomlbpzyxn.supabase.co/functions/v1/sorafit/api';
+  const STORAGE = {
+    location: 'sorafit.location.v1',
+    settings: 'sorafit.settings.v1',
+    weather: 'sorafit.weather.v1',
+    savedLocations: 'sorafit.savedLocations.v1',
+    pushEnabled: 'sorafit.pushEnabled.v1'
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    dashboard: $('dashboard'), statusBox: $('statusBox'), locationName: $('locationName'),
+    locationInput: $('locationInput'), searchForm: $('searchForm'), searchResults: $('searchResults'),
+    gpsBtn: $('gpsBtn'), refreshBtn: $('refreshBtn'), toast: $('toast'), todayLabel: $('todayLabel'),
+    heroWeatherIcon: $('heroWeatherIcon'), todayWeatherText: $('todayWeatherText'), tomorrowLabel: $('tomorrowLabel'),
+    tomorrowWeatherIcon: $('tomorrowWeatherIcon'), tomorrowWeatherText: $('tomorrowWeatherText'), tomorrowMax: $('tomorrowMax'), tomorrowMin: $('tomorrowMin'), tomorrowRain: $('tomorrowRain'),
+    dayAfterLabel: $('dayAfterLabel'), dayAfterWeatherIcon: $('dayAfterWeatherIcon'), dayAfterWeatherText: $('dayAfterWeatherText'), dayAfterMax: $('dayAfterMax'), dayAfterMin: $('dayAfterMin'), dayAfterRain: $('dayAfterRain'),
+    clothesText: $('clothesText'),
+    outerText: $('outerText'), umbrellaText: $('umbrellaText'), adviceText: $('adviceText'), sourceStamp: $('sourceStamp'),
+    minTemp: $('minTemp'), maxTemp: $('maxTemp'), rainChance: $('rainChance'),
+    currentWeatherLabel: $('currentWeatherLabel'), currentTemp: $('currentTemp'), currentFeels: $('currentFeels'),
+    currentHumidity: $('currentHumidity'), currentWind: $('currentWind'), hourlyList: $('hourlyList'),
+    dailyList: $('dailyList'), startHour: $('startHour'), endHour: $('endHour'), saveSettingsBtn: $('saveSettingsBtn'),
+    rainTimingText: $('rainTimingText'), weatherAlertText: $('weatherAlertText'), speakBtn: $('speakBtn'), morningSummaryText: $('morningSummaryText'),
+    radarYahooBtn: $('radarYahooBtn'), installBtn: $('installBtn'), installHint: $('installHint'),
+    pushBtn: $('pushBtn'), pushHint: $('pushHint'), pushLocationText: $('pushLocationText'),
+    saveLocationBtn: $('saveLocationBtn'), savedLocations: $('savedLocations'), savedTabsBar: $('savedTabsBar'),
+    topStack: $('topStack'), topStackSpacer: $('topStackSpacer')
+  };
+
+  let storageAvailable = true;
+  let currentLocation = loadJSON(STORAGE.location);
+  let currentWeather = null;
+  let savedLocations = Array.isArray(loadJSON(STORAGE.savedLocations)) ? loadJSON(STORAGE.savedLocations).slice(0,5) : [];
+  let currentVoiceSummary = '';
+  let currentUtterance = null;
+  let settings = Object.assign({ startHour: '07:00', endHour: '19:00' }, loadJSON(STORAGE.settings) || {});
+  els.startHour.value = settings.startHour;
+  els.endHour.value = settings.endHour;
+
+  function loadJSON(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      storageAvailable = false;
+      return null;
+    }
+  }
+
+  function saveJSON(key, value) {
+    if (!storageAvailable) return false;
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      storageAvailable = false;
+      return false;
+    }
+  }
+
+  function toast(message) {
+    els.toast.textContent = message;
+    els.toast.hidden = false;
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => { els.toast.hidden = true; }, 2600);
+  }
+
+  function status(title, message, type = 'info') {
+    els.statusBox.className = `status-box ${type}`;
+    els.statusBox.innerHTML = `<strong>${escapeHTML(title)}</strong><span>${escapeHTML(message)}</span>`;
+    els.statusBox.hidden = false;
+  }
+
+
+  function syncTopStackSpacer() {
+    if (!els.topStack || !els.topStackSpacer) return;
+    const h = Math.ceil(els.topStack.getBoundingClientRect().height || els.topStack.offsetHeight || 0);
+    if (h > 0) {
+      els.topStackSpacer.style.height = `${h}px`;
+      document.documentElement.style.setProperty('--sorafit-top-stack-height', `${h}px`);
+    }
+  }
+
+  if ('ResizeObserver' in window && els.topStack) {
+    const topStackObserver = new ResizeObserver(() => syncTopStackSpacer());
+    topStackObserver.observe(els.topStack);
+  }
+  window.addEventListener('resize', syncTopStackSpacer, { passive: true });
+
+  function humanError(error) {
+    const msg = String(error?.message || error || '不明なエラー');
+    if (/Failed to fetch|NetworkError|Load failed/i.test(msg)) return '天気APIへ接続できませんでした。通信環境またはブラウザの通信制限を確認してください。';
+    if (/HTTP 429/.test(msg)) return 'APIの利用回数上限に達しました。少し時間をおいて再度お試しください。';
+    if (/HTTP 4\d\d/.test(msg)) return `APIへのリクエスト内容でエラーが発生しました（${msg}）。`;
+    if (/HTTP 5\d\d/.test(msg)) return `天気API側で一時的な障害が発生しています（${msg}）。`;
+    return msg;
+  }
+
+  function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  }
+
+  function formatDateJP(dateStr, withYear = false) {
+    const d = new Date(`${dateStr}T12:00:00`);
+    return new Intl.DateTimeFormat('ja-JP', {
+      year: withYear ? 'numeric' : undefined, month: 'numeric', day: 'numeric', weekday: 'short'
+    }).format(d);
+  }
+
+  function formatMDWeek(dateStr) {
+    const d = new Date(`${dateStr}T12:00:00`);
+    const md = new Intl.DateTimeFormat('ja-JP', { month:'numeric', day:'numeric' }).format(d);
+    const wd = new Intl.DateTimeFormat('ja-JP', { weekday:'short' }).format(d);
+    return `${md}(${wd})`;
+  }
+
+  function formatMD(dateStr) {
+    const d = new Date(`${dateStr}T12:00:00`);
+    return new Intl.DateTimeFormat('ja-JP', { month:'numeric', day:'numeric' }).format(d);
+  }
+
+  function weekdayInfo(dateStr) {
+    const d = new Date(`${dateStr}T12:00:00`);
+    const wd = new Intl.DateTimeFormat('ja-JP', { weekday:'short' }).format(d);
+    const cls = wd.includes('日') ? ' sun' : wd.includes('土') ? ' sat' : '';
+    return { wd, cls };
+  }
+
+  function humidityComment(value) {
+    const h = Number(value);
+    if (!Number.isFinite(h)) return { label:'', cls:'' };
+    if (h >= 70) return { label:'高い', cls:'high' };
+    if (h <= 40) return { label:'低い', cls:'low' };
+    return { label:'', cls:'' };
+  }
+
+  function sameLocation(a, b) {
+    if (!a || !b) return false;
+    return Math.abs(Number(a.latitude)-Number(b.latitude)) < 0.0001 && Math.abs(Number(a.longitude)-Number(b.longitude)) < 0.0001;
+  }
+
+  function renderSavedLocations() {
+    if (!els.savedLocations) return;
+    if (els.savedTabsBar) els.savedTabsBar.hidden = savedLocations.length === 0;
+    if (!savedLocations.length) {
+      els.savedLocations.innerHTML = '';
+    } else {
+      els.savedLocations.innerHTML = savedLocations.map((loc, i) => `
+        <div class="saved-location-tab${sameLocation(loc,currentLocation) ? ' active' : ''}"${sameLocation(loc,currentLocation) ? ' aria-current="location"' : ''}>
+          <button type="button" class="saved-location-open" data-saved-index="${i}" title="${escapeHTML(loc.name || '登録地点')}を表示"><span>${escapeHTML(loc.name || '登録地点')}</span></button>
+          <button type="button" class="saved-location-remove" data-remove-index="${i}" aria-label="${escapeHTML(loc.name || '登録地点')}を削除">×</button>
+        </div>`).join('');
+      els.savedLocations.querySelectorAll('.saved-location-open').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const loc = savedLocations[Number(btn.dataset.savedIndex)];
+          if (loc) await selectLocation({ ...loc });
+        });
+      });
+      requestAnimationFrame(() => {
+        const activeTab = els.savedLocations.querySelector('.saved-location-tab.active');
+        if (activeTab) {
+          const target = activeTab.offsetLeft - Math.max(0, (els.savedLocations.clientWidth - activeTab.offsetWidth) / 2);
+          els.savedLocations.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+        }
+      });
+      els.savedLocations.querySelectorAll('.saved-location-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const i = Number(btn.dataset.removeIndex);
+          if (!Number.isInteger(i) || !savedLocations[i]) return;
+          const name = savedLocations[i].name || '登録地点';
+          savedLocations.splice(i,1);
+          saveJSON(STORAGE.savedLocations, savedLocations);
+          renderSavedLocations();
+          toast(`${name}を登録から外しました`);
+        });
+      });
+    }
+    requestAnimationFrame(syncTopStackSpacer);
+    if (els.saveLocationBtn) {
+      const already = savedLocations.some(loc => sameLocation(loc,currentLocation));
+      els.saveLocationBtn.disabled = !currentLocation || already;
+      els.saveLocationBtn.textContent = already ? '登録済み' : '＋この地点を登録';
+    }
+  }
+
+  function buildForecastURL(loc) {
+    const params = new URLSearchParams({
+      latitude: String(loc.latitude),
+      longitude: String(loc.longitude),
+      current: 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_gusts_10m',
+      hourly: 'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_gusts_10m',
+      daily: 'weather_code,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,wind_gusts_10m_max',
+      timezone: 'Asia/Tokyo',
+      temperature_unit: 'celsius',
+      wind_speed_unit: 'kmh',
+      precipitation_unit: 'mm',
+      forecast_days: '16'
+    });
+    return `${API_FORECAST}?${params.toString()}`;
+  }
+
+
+  function buildVoiceSummary(data, loc, analysis, rainTiming, rainPeak, suddenRisk, fromCache = false) {
+    const dailyCode = data.daily.weather_code?.[0] ?? data.current?.weather_code;
+    const [dayLabel] = WeatherCore.weatherInfo(dailyCode);
+    const place = (loc?.name || '設定した地域').replace(/・/g, '、');
+    const maxT = Math.round(Number(data.daily.temperature_2m_max?.[0]));
+    const minT = Math.round(Number(data.daily.temperature_2m_min?.[0]));
+
+    const outerSentence = analysis.outerNeeded
+      ? `今日はアウターが必要です。${analysis.outer}がちょうどよさそうです。`
+      : '今日はアウターは必要ありません。';
+
+    const tempSentence = analysis.tempCommentVoice ? `${analysis.tempCommentVoice}。` : ''; 
+
+    let umbrellaSentence = '傘は必要ありません。';
+    const timingVoice = rainTiming?.voiceText ? `${rainTiming.voiceText}。` : '';
+    if (analysis.umbrella === '折りたたみ傘') {
+      umbrellaSentence = `折りたたみ傘を持っていくと安心です。${timingVoice || '雨の時間帯はまだはっきりしていません。'}`;
+    } else if (analysis.umbrella === '普通の傘') {
+      umbrellaSentence = `雨に備えて、普通の傘がおすすめです。${timingVoice || '雨の時間帯はまだはっきりしていません。'}`;
+    }
+
+    const rainSentence = analysis.umbrella === '不要' && rainTiming?.voiceText ? `${rainTiming.voiceText}。` : '';
+    const peakSentence = rainPeak?.voiceText ? `${rainPeak.voiceText}。` : '';
+    const windMs = Number(analysis.maxWind || 0) / 3.6;
+    const windSentence = windMs >= 10 ? `今日は最大風速が約${windMs.toFixed(1)}メートル毎秒の予報で、風がかなり強めです。傘があおられたり、歩きにくくなることがあるので注意してください。` : windMs >= 7 ? `今日は最大風速が約${windMs.toFixed(1)}メートル毎秒の予報で、風が強めです。傘や帽子があおられないよう注意してください。` : '';
+    const suddenSentence = suddenRisk?.active && suddenRisk?.voiceText ? `${suddenRisk.voiceText}。` : '';
+    const cacheSentence = fromCache ? 'なお、通信できないため、保存してある予報を読み上げています。' : '';
+
+    return [
+      `おはようございます。${place}の今日の天気をお伝えします。`,
+      `今日は${dayLabel}。最高気温は${maxT}度、最低気温は${minT}度の予報です。`,
+      tempSentence,
+      `服装は${analysis.clothes}がおすすめです。`,
+      outerSentence,
+      rainSentence,
+      peakSentence,
+      suddenSentence,
+      umbrellaSentence,
+      windSentence,
+      cacheSentence,
+      '以上、今日の天気でした。気をつけていってらっしゃい。'
+    ].filter(Boolean).join('');
+  }
+
+  function buildMorningTextSummary(data, loc, analysis, rainTiming, suddenRisk) {
+    const [dayLabel] = WeatherCore.weatherInfo(data.daily.weather_code?.[0] ?? data.current?.weather_code);
+    const place = loc?.name || '設定した地域';
+    const maxT = Math.round(Number(data.daily.temperature_2m_max?.[0]));
+    const minT = Math.round(Number(data.daily.temperature_2m_min?.[0]));
+    const lines = [
+      `${place}は今日は${dayLabel}。最高${maxT}℃、最低${minT}℃の予報です。`
+    ];
+    if (analysis.tempCommentVoice) lines.push(`${analysis.tempCommentVoice}。`);
+    lines.push(`服装は${analysis.clothes}。アウターは${analysis.outerNeeded ? `必要（${analysis.outer}）` : '不要'}です。`);
+    if (analysis.umbrella === '普通の傘') {
+      lines.push(`普通の傘を持っていくのがおすすめです。${rainTiming?.text || '雨の時間帯はまだはっきりしていません。'}`);
+    } else if (analysis.umbrella === '折りたたみ傘') {
+      lines.push(`折りたたみ傘があると安心です。${rainTiming?.text || '雨の時間帯はまだはっきりしていません。'}`);
+    } else if (rainTiming?.text) {
+      lines.push(rainTiming.text);
+    }
+    if (suddenRisk?.active && suddenRisk?.text) lines.push(suddenRisk.text);
+    const windMs = Number(analysis.maxWind || 0) / 3.6;
+    if (windMs >= 10) lines.push(`最大風速は約${windMs.toFixed(1)}m/s。風がかなり強くなる可能性があります。`);
+    else if (windMs >= 7) lines.push(`最大風速は約${windMs.toFixed(1)}m/s。風が強めなので注意してください。`);
+    return lines.join('\n');
+  }
+
+  function resetSpeakButton() {
+    if (!els.speakBtn) return;
+    els.speakBtn.classList.remove('is-speaking');
+    els.speakBtn.textContent = '🔊 朝の概要を聞く';
+  }
+
+  function speakSummary() {
+    if (!currentVoiceSummary) { toast('先に天気を取得してください'); return; }
+    if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
+      toast('このブラウザは音声読み上げに対応していません');
+      return;
+    }
+    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+      window.speechSynthesis.cancel();
+      currentUtterance = null;
+      resetSpeakButton();
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(currentVoiceSummary);
+    utter.lang = 'ja-JP';
+    utter.rate = 1.05;
+    utter.pitch = 1.0;
+    utter.volume = 1.0;
+    const voices = window.speechSynthesis.getVoices?.() || [];
+    const jaVoice = voices.find(v => String(v.lang || '').toLowerCase().startsWith('ja'));
+    if (jaVoice) utter.voice = jaVoice;
+    utter.onstart = () => {
+      els.speakBtn.classList.add('is-speaking');
+      els.speakBtn.textContent = '■ 読み上げを停止';
+    };
+    utter.onend = () => { currentUtterance = null; resetSpeakButton(); };
+    utter.onerror = (event) => {
+      currentUtterance = null;
+      resetSpeakButton();
+      if (event?.error !== 'canceled' && event?.error !== 'interrupted') toast('音声を再生できませんでした');
+    };
+    currentUtterance = utter;
+    window.speechSynthesis.speak(utter);
+  }
+
+  async function fetchJSON(url, options = {}) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (error) {
+      if (error?.name === 'AbortError') throw new Error('通信が15秒以内に完了しませんでした');
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  async function fetchWeather(loc, { silent = false } = {}) {
+    if (!silent) status('天気を取得しています…', 'Open-Meteoの最新予報を読み込んでいます。');
+    try {
+      const data = await fetchJSON(buildForecastURL(loc), { cache: 'no-store' });
+      if (!data?.hourly?.time?.length || !data?.daily?.time?.length || !data?.current) throw new Error('予報データが空です');
+      currentWeather = data;
+      saveJSON(STORAGE.weather, { location: loc, fetchedAt: new Date().toISOString(), data });
+      renderAll(data, loc, false);
+      return data;
+    } catch (error) {
+      const cached = loadJSON(STORAGE.weather);
+      const same = cached?.location && Number(cached.location.latitude) === Number(loc.latitude) && Number(cached.location.longitude) === Number(loc.longitude);
+      if (same && cached?.data) {
+        currentWeather = cached.data;
+        renderAll(cached.data, loc, true, cached.fetchedAt);
+        return cached.data;
+      }
+      status('天気を取得できませんでした', humanError(error), 'error');
+      console.error('Weather fetch failed:', error);
+      return null;
+    }
+  }
+
+  function renderAll(data, loc, fromCache = false, fetchedAt = null) {
+    const analysis = WeatherCore.analyzeDay(data, settings);
+    const rainTiming = WeatherCore.rainTiming(data, data.daily.time[0], data.current?.time);
+    const rainPeak = WeatherCore.rainfallPeak(data, data.daily.time[0], data.current?.time);
+    const suddenRisk = WeatherCore.suddenRainRisk(data, settings, data.current?.time);
+    const dailyCode = data.daily.weather_code?.[0] ?? data.current.weather_code;
+    const [dayLabel, dayIcon] = WeatherCore.weatherInfo(dailyCode);
+    const tomorrowCode = data.daily.weather_code?.[1] ?? dailyCode;
+    const [tomorrowText, tomorrowIcon] = WeatherCore.weatherInfo(tomorrowCode);
+    const dayAfterCode = data.daily.weather_code?.[2] ?? tomorrowCode;
+    const [dayAfterText, dayAfterIcon] = WeatherCore.weatherInfo(dayAfterCode);
+
+    els.locationName.textContent = loc.name || '現在地';
+    els.todayLabel.textContent = `今日 ${formatDateJP(data.daily.time[0])}`;
+    els.heroWeatherIcon.innerHTML = dayIcon;
+    if (els.todayWeatherText) els.todayWeatherText.textContent = dayLabel;
+    if (els.tomorrowLabel) els.tomorrowLabel.textContent = data.daily.time?.[1] ? `明日 ${formatDateJP(data.daily.time[1])}` : '明日';
+    if (els.tomorrowWeatherIcon) els.tomorrowWeatherIcon.innerHTML = tomorrowIcon;
+    if (els.tomorrowWeatherText) els.tomorrowWeatherText.textContent = tomorrowText;
+    els.clothesText.textContent = analysis.clothes;
+    els.outerText.textContent = analysis.outerNeeded ? '必要' : '不要';
+    els.umbrellaText.textContent = analysis.umbrella;
+    els.rainTimingText.textContent = rainTiming.text;
+    currentVoiceSummary = buildVoiceSummary(data, loc, analysis, rainTiming, rainPeak, suddenRisk, fromCache);
+    els.speakBtn.disabled = false;
+    if (els.morningSummaryText) {
+      els.morningSummaryText.textContent = buildMorningTextSummary(data, loc, analysis, rainTiming, suddenRisk);
+      els.morningSummaryText.hidden = false;
+    }
+    if (els.weatherAlertText) {
+      const alertParts = [];
+      let alertLevel = suddenRisk.level || 0;
+      if (suddenRisk.active) {
+        alertParts.push(`<div class="alert-line"><strong>${escapeHTML(suddenRisk.label)}</strong><span>${escapeHTML(suddenRisk.text)}</span></div>`);
+      }
+      const maxWindMs = Number(analysis.maxWind || 0) / 3.6;
+      const maxGustMs = Number(analysis.maxGust || 0) / 3.6;
+      if (maxWindMs >= 7 || maxGustMs >= 12) {
+        alertLevel = Math.max(alertLevel, maxWindMs >= 10 || maxGustMs >= 15 ? 2 : 1);
+        const windText = maxWindMs >= 10 || maxGustMs >= 15
+          ? `今日は風がかなり強くなる予報です。最大風速は約${maxWindMs.toFixed(1)}m/sです。傘の使用や自転車、屋外の軽い物に注意してください。`
+          : `今日は風が強めの予報です。最大風速は約${maxWindMs.toFixed(1)}m/sです。傘や帽子があおられないよう注意してください。`;
+        alertParts.push(`<div class="alert-line"><strong>風が強い日です</strong><span>${escapeHTML(windText)}</span></div>`);
+      }
+      els.weatherAlertText.hidden = alertParts.length === 0;
+      els.weatherAlertText.className = `weather-alert level-${alertLevel}`;
+      els.weatherAlertText.innerHTML = alertParts.join('');
+    }
+    els.adviceText.textContent = analysis.advice;
+    els.sourceStamp.textContent = fromCache
+      ? '保存済み予報を表示中'
+      : `Open-Meteo Best Match ・ ${new Intl.DateTimeFormat('ja-JP', {hour:'2-digit', minute:'2-digit'}).format(new Date())}取得`;
+    els.minTemp.textContent = `${Math.round(Number(data.daily.temperature_2m_min?.[0]))}℃`;
+    els.maxTemp.textContent = `${Math.round(Number(data.daily.temperature_2m_max?.[0]))}℃`;
+    els.rainChance.textContent = `☂ ${Math.round(Number(data.daily.precipitation_probability_max?.[0] ?? analysis.maxProb))}%`;
+    if (els.tomorrowMax) els.tomorrowMax.textContent = `${Math.round(Number(data.daily.temperature_2m_max?.[1]))}℃`;
+    if (els.tomorrowMin) els.tomorrowMin.textContent = `${Math.round(Number(data.daily.temperature_2m_min?.[1]))}℃`;
+    if (els.tomorrowRain) els.tomorrowRain.textContent = `☂ ${Math.round(Number(data.daily.precipitation_probability_max?.[1] ?? 0))}%`;
+    if (els.dayAfterLabel) els.dayAfterLabel.textContent = data.daily.time?.[2] ? `明後日 ${formatDateJP(data.daily.time[2])}` : '明後日';
+    if (els.dayAfterWeatherIcon) els.dayAfterWeatherIcon.innerHTML = dayAfterIcon;
+    if (els.dayAfterWeatherText) els.dayAfterWeatherText.textContent = dayAfterText;
+    if (els.dayAfterMax) els.dayAfterMax.textContent = `${Math.round(Number(data.daily.temperature_2m_max?.[2]))}℃`;
+    if (els.dayAfterMin) els.dayAfterMin.textContent = `${Math.round(Number(data.daily.temperature_2m_min?.[2]))}℃`;
+    if (els.dayAfterRain) els.dayAfterRain.textContent = `☂ ${Math.round(Number(data.daily.precipitation_probability_max?.[2] ?? 0))}%`;
+
+    const [curLabel] = WeatherCore.weatherInfo(data.current.weather_code);
+    els.currentWeatherLabel.textContent = curLabel;
+    els.currentTemp.textContent = `${Math.round(Number(data.current.temperature_2m))}℃`;
+    els.currentFeels.textContent = `${Math.round(Number(data.current.apparent_temperature))}℃`;
+    els.currentHumidity.textContent = `${Math.round(Number(data.current.relative_humidity_2m))}%`;
+    const windMs = Number(data.current.wind_speed_10m) / 3.6;
+    els.currentWind.textContent = `${Number.isFinite(windMs) ? windMs.toFixed(1) : '—'} m/s`;
+
+    renderHourly(data);
+    renderDaily(data);
+    updateExternalLinks(loc);
+    els.dashboard.hidden = false;
+
+    if (fromCache) {
+      const when = fetchedAt ? new Intl.DateTimeFormat('ja-JP', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(fetchedAt)) : '以前';
+      status('オフラインの保存データを表示中', `${when}に取得した予報です。オンラインになったら更新してください。`, 'warn');
+    } else {
+      els.statusBox.hidden = true;
+      els.statusBox.className = 'status-box';
+      els.statusBox.innerHTML = '';
+    }
+  }
+
+  function renderHourly(data) {
+    if (!els.hourlyList || !data?.hourly?.time?.length) return;
+    const times = data.hourly.time;
+    const current = String(data.current?.time || '');
+    const currentKey = /^\d{4}-\d{2}-\d{2}T\d{2}/.test(current) ? current.slice(0, 13) : '';
+    let start = currentKey ? times.findIndex(t => String(t).slice(0, 13) >= currentKey) : 0;
+    if (start < 0) start = 0;
+    const end = Math.min(times.length - 1, start + 49);
+    const startDate = String(times[start]).slice(0,10);
+    let lastDate = startDate;
+    const cols = [];
+    for (let i = start; i < end; i++) {
+      const t = String(times[i]);
+      const date = t.slice(0, 10);
+      const hour = Number(t.slice(11, 13));
+      if (date !== lastDate) {
+        const dailyIndex = (data.daily.time || []).indexOf(date);
+        const dayWord = dailyIndex === 1 ? '明日' : dailyIndex === 2 ? '明後日' : '日付変更';
+        const md = formatMD(date);
+        const { wd, cls } = weekdayInfo(date);
+        cols.push(`<div class="hour-day-divider" aria-label="${escapeHTML(dayWord)} ${escapeHTML(md)} ${escapeHTML(wd)}曜日"><strong>${escapeHTML(dayWord)}</strong><div class="hour-day-date"><span>${escapeHTML(md)}</span><span class="hour-weekday${cls}">${escapeHTML(wd)}</span></div></div>`);
+        lastDate = date;
+      }
+      const intervalIdx = i + 1;
+      const [, icon] = WeatherCore.weatherInfo(data.hourly.weather_code?.[i]);
+      const temp = Math.round(Number(data.hourly.temperature_2m?.[i]));
+      const prob = Math.round(Number(data.hourly.precipitation_probability?.[intervalIdx] ?? 0));
+      const rain = Math.max(0, Number(data.hourly.precipitation?.[intervalIdx] ?? 0));
+      const humidity = Math.round(Number(data.hourly.relative_humidity_2m?.[i] ?? 0));
+      const humidityNote = humidityComment(humidity);
+      const windMs = Number(data.hourly.wind_speed_10m?.[i] ?? 0) / 3.6;
+      const rainHeight = Math.min(100, rain <= 0 ? 0 : Math.max(8, rain / 10 * 100));
+      const nextHour = (hour + 1) % 24;
+      cols.push(`<article class="hour-col" aria-label="${escapeHTML(date)} ${hour}時。降水は${hour}時から${nextHour}時の予報">
+        <div class="hour-cell hour-time"><strong>${hour}</strong></div>
+        <div class="hour-cell hour-weather">${icon}</div>
+        <div class="hour-cell hour-temp">${temp}℃</div>
+        <div class="hour-cell hour-prob">${prob}%</div>
+        <div class="hour-cell hour-rain"><div class="rain-microbar"><i style="height:${rainHeight}%"></i></div><strong>${rain.toFixed(1)}mm</strong></div>
+        <div class="hour-cell hour-humidity"><strong>${humidity}%</strong>${humidityNote.label ? `<small class="humidity-note ${humidityNote.cls}">${humidityNote.label}</small>` : ''}</div>
+        <div class="hour-cell hour-wind"><strong>${windMs.toFixed(1)}m/s</strong></div>
+      </article>`);
+    }
+    els.hourlyList.innerHTML = cols.join('');
+    els.hourlyList.scrollLeft = 0;
+  }
+
+  function renderDaily(data) {
+    const rows = (data.daily.time || []).slice(0, 16).map((d, i) => {
+      const [, icon] = WeatherCore.weatherInfo(data.daily.weather_code?.[i]);
+      const rain = Math.round(Number(data.daily.precipitation_probability_max?.[i] ?? 0));
+      const humidityValues = (data.hourly.time || []).reduce((acc, t, idx) => {
+        if (String(t).slice(0, 10) === d) acc.push(Number(data.hourly.relative_humidity_2m?.[idx] ?? NaN));
+        return acc;
+      }, []).filter(v => Number.isFinite(v));
+      const humidity = humidityValues.length ? Math.round(humidityValues.reduce((a,b) => a+b, 0) / humidityValues.length) : null;
+      const windKmh = Number(data.daily.wind_speed_10m_max?.[i] ?? 0);
+      const windMs = Number.isFinite(windKmh) ? windKmh / 3.6 : 0;
+      const windStrong = windMs >= 7;
+      const feel = WeatherCore.clothingForDaily(
+        data.daily.apparent_temperature_min?.[i] ?? data.daily.temperature_2m_min?.[i],
+        data.daily.apparent_temperature_max?.[i] ?? data.daily.temperature_2m_max?.[i],
+        windKmh
+      );
+      const feelLabel = String(feel.tempComment || '');
+      let hotNote = '';
+      let coldNote = '';
+      if (feelLabel === 'かなり暑い') hotNote = '暑い';
+      else if (feelLabel === '暑め') hotNote = '暑め';
+      else if (feelLabel === 'やや涼しい') coldNote = '涼しい';
+      else if (feelLabel === '肌寒い') coldNote = '肌寒い';
+      else if (feelLabel === '寒い') coldNote = '寒い';
+      const dt = new Date(`${d}T12:00:00`);
+      const md = new Intl.DateTimeFormat('ja-JP', { month:'numeric', day:'numeric' }).format(dt);
+      const wd = new Intl.DateTimeFormat('ja-JP', { weekday:'short' }).format(dt);
+      const cls = wd.includes('日') ? ' sun' : wd.includes('土') ? ' sat' : '';
+      const distant = i >= 7;
+      return `<article class="day-row${i === 0 ? ' today-row' : ''}${distant ? ' distant' : ''}">
+        <div class="day-date"><span>${escapeHTML(md)}</span><span class="weekday${cls}">${escapeHTML(wd)}</span></div>
+        <div class="day-icon" aria-hidden="true">${icon}</div>
+        <div class="day-high">${Math.round(Number(data.daily.temperature_2m_max?.[i]))}℃${hotNote ? `<small class="temp-comment hot">${escapeHTML(hotNote)}</small>` : ''}</div>
+        <div class="day-low">${Math.round(Number(data.daily.temperature_2m_min?.[i]))}℃${coldNote ? `<small class="temp-comment cold">${escapeHTML(coldNote)}</small>` : ''}</div>
+        <div class="day-rain">${rain}%</div>
+        <div class="day-humidity">${humidity == null ? '—' : `${humidity}%`}${humidity == null ? '' : (() => { const hc = humidityComment(humidity); return hc.label ? `<small class="humidity-note ${hc.cls}">${hc.label}</small>` : ''; })()}</div>
+        <div class="day-wind${windStrong ? ' strong' : ''}">${windMs.toFixed(1)}<small>m/s</small>${windStrong ? '<b>風強め</b>' : ''}</div>
+      </article>`;
+    });
+    els.dailyList.innerHTML = rows.join('');
+  }
+
+
+  function buildYahooRadarURL(loc) {
+    const lat = Number(loc?.latitude);
+    const lon = Number(loc?.longitude);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return 'https://weather.yahoo.co.jp/weather/zoomradar/';
+    return `https://weather.yahoo.co.jp/weather/zoomradar/?lat=${lat.toFixed(6)}&lon=${lon.toFixed(6)}&z=12`;
+  }
+
+  function updateExternalLinks(loc) {
+    if (els.radarYahooBtn) els.radarYahooBtn.href = buildYahooRadarURL(loc);
+  }
+
+  function normalizeLocationQuery(query) {
+    return query.trim().replace(/[　\s]+/g, ' ');
+  }
+
+  function fallbackLocationQuery(query) {
+    const q = normalizeLocationQuery(query);
+    return q.replace(/(市|区|町|村)$/u, '').trim();
+  }
+
+  async function geocodeOnce(query) {
+    const params = new URLSearchParams({ name: query, count: '8', language: 'ja', countryCode: 'JP', format: 'json' });
+    const json = await fetchJSON(`${API_GEOCODE}?${params.toString()}`, { cache: 'no-store' });
+    return json.results || [];
+  }
+
+  async function geocode(query) {
+    const primary = normalizeLocationQuery(query);
+    let results = await geocodeOnce(primary);
+    if (results.length) return results;
+    const fallback = fallbackLocationQuery(primary);
+    if (fallback && fallback !== primary) results = await geocodeOnce(fallback);
+    return results;
+  }
+
+  function renderSearchResults(results) {
+    if (!results.length) {
+      els.searchResults.innerHTML = '<div class="empty-result">該当する地域が見つかりませんでした。都道府県名を付けて再検索してください。</div>';
+      els.searchResults.hidden = false;
+      return;
+    }
+    els.searchResults.innerHTML = results.map((r, i) => {
+      const sub = [r.admin1, r.admin2].filter(Boolean).join(' / ');
+      return `<button type="button" class="result-btn" data-index="${i}"><strong>${escapeHTML(r.name)}</strong><span>${escapeHTML(sub)}</span></button>`;
+    }).join('');
+    els.searchResults.hidden = false;
+    els.searchResults.querySelectorAll('.result-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const r = results[Number(btn.dataset.index)];
+        await selectLocation({ name: [r.name, r.admin1].filter(Boolean).join('・'), latitude: r.latitude, longitude: r.longitude });
+        els.searchResults.hidden = true;
+        els.locationInput.value = '';
+      });
+    });
+  }
+
+  async function selectLocation(loc) {
+    currentLocation = loc;
+    saveJSON(STORAGE.location, loc);
+    els.locationName.textContent = loc.name || '選択した地域';
+    renderSavedLocations();
+    await fetchWeather(loc);
+    updatePushUI();
+    syncPushSubscription({ silent: true });
+  }
+
+  els.searchForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const q = normalizeLocationQuery(els.locationInput.value);
+    if (q.length < 2) { toast('市町村名を2文字以上入力してください'); return; }
+    status('地域を検索しています…', `「${q}」を検索中です。`);
+    try {
+      const results = await geocode(q);
+      renderSearchResults(results);
+      if (results.length) status('候補を選んでください', '同名の地域がある場合は都道府県も確認してください。');
+      else status('地域が見つかりませんでした', '「福島県 南相馬」など、都道府県名を付けてお試しください。', 'warn');
+    } catch (error) {
+      console.error('Geocoding failed:', error);
+      status('地域検索に失敗しました', humanError(error), 'error');
+    }
+  });
+
+  els.gpsBtn.addEventListener('click', () => {
+    if (location.protocol === 'file:') {
+      status('現在地はこの開き方では使えません', '現在地取得にはHTTPSが必要です。市町村検索は利用できます。GitHub Pagesに公開すると現在地も使えます。', 'warn');
+      return;
+    }
+    if (!window.isSecureContext) {
+      status('現在地を利用できません', '現在地取得にはHTTPS接続が必要です。市町村検索をご利用ください。', 'warn');
+      return;
+    }
+    if (!navigator.geolocation) { toast('この端末では位置情報を利用できません'); return; }
+    status('現在地を確認しています…', '位置情報の利用を許可してください。');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => selectLocation({ name: '現在地', latitude: Number(pos.coords.latitude.toFixed(4)), longitude: Number(pos.coords.longitude.toFixed(4)) }),
+      (error) => status('現在地を取得できませんでした', error?.code === 1 ? '位置情報が許可されていません。ブラウザ設定を確認するか、市町村検索をご利用ください。' : '位置情報を取得できませんでした。市町村検索をご利用ください。', 'warn'),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 }
+    );
+  });
+
+  els.refreshBtn.addEventListener('click', () => {
+    if (!currentLocation) { toast('先に地域を設定してください'); return; }
+    fetchWeather(currentLocation).then(data => { if (data) toast('天気を更新しました'); });
+  });
+
+  if (els.saveLocationBtn) {
+    els.saveLocationBtn.addEventListener('click', () => {
+      if (!currentLocation) { toast('先に地点を表示してください'); return; }
+      if (savedLocations.some(loc => sameLocation(loc,currentLocation))) { toast('この地点は登録済みです'); return; }
+      if (savedLocations.length >= 5) { toast('登録できる地点は5か所までです'); return; }
+      savedLocations.push({ name: currentLocation.name || '登録地点', latitude: Number(currentLocation.latitude), longitude: Number(currentLocation.longitude) });
+      saveJSON(STORAGE.savedLocations, savedLocations);
+      renderSavedLocations();
+      toast(`${currentLocation.name || '地点'}を登録しました`);
+    });
+  }
+
+  // Scheduled Web Push (server-side cron at 06:00 JST)
+  function base64UrlToUint8Array(value) {
+    const padding = '='.repeat((4 - value.length % 4) % 4);
+    const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
+    const raw = atob(base64);
+    return Uint8Array.from([...raw].map(ch => ch.charCodeAt(0)));
+  }
+
+  function canUsePush() {
+    return location.protocol === 'https:' && !window.__SORAFIT_SINGLE__ &&
+      'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+  }
+
+  async function getPushSubscription() {
+    if (!canUsePush()) return null;
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      return await reg.pushManager.getSubscription();
+    } catch (_) { return null; }
+  }
+
+  function pushPayload(subscription) {
+    const loc = currentLocation || loadJSON(STORAGE.location);
+    if (!loc) return null;
+    const json = subscription.toJSON ? subscription.toJSON() : subscription;
+    return {
+      subscription: json,
+      location: {
+        name: loc.name || '設定地点',
+        latitude: Number(loc.latitude),
+        longitude: Number(loc.longitude)
+      },
+      settings: {
+        startHour: settings.startHour || '07:00',
+        endHour: settings.endHour || '19:00',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Tokyo'
+      }
+    };
+  }
+
+  async function postPush(path, body) {
+    const res = await fetch(`${PUSH_API}/${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-SoraFit-Client': 'pwa-v1.30' },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error(`通知設定の保存に失敗しました（HTTP ${res.status}）`);
+    return res.json().catch(() => ({}));
+  }
+
+  async function syncPushSubscription({ silent = true } = {}) {
+    if (!canUsePush() || Notification.permission !== 'granted') return false;
+    const subscription = await getPushSubscription();
+    if (!subscription) return false;
+    const payload = pushPayload(subscription);
+    if (!payload) return false;
+    try {
+      await postPush('subscribe', payload);
+      saveJSON(STORAGE.pushEnabled, true);
+      if (!silent) toast('毎朝6時の通知を設定しました');
+      return true;
+    } catch (error) {
+      console.warn('Push sync failed', error);
+      if (!silent) toast('通知設定を保存できませんでした');
+      return false;
+    } finally {
+      updatePushUI();
+    }
+  }
+
+  async function enableMorningPush() {
+    if (!currentLocation) { toast('先に通知する地点を表示してください'); return; }
+    if (!canUsePush()) {
+      toast(isIOSDevice() ? 'iPhoneはホーム画面に追加したSoraFitから通知をONにしてください' : '公開版をHTTPSで開くと通知を利用できます');
+      return;
+    }
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') { toast('通知が許可されていません'); updatePushUI(); return; }
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      let subscription = await reg.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: base64UrlToUint8Array(PUSH_PUBLIC_KEY)
+        });
+      }
+      await syncPushSubscription({ silent: false });
+    } catch (error) {
+      console.error('Push subscription failed', error);
+      toast('通知の登録に失敗しました。ブラウザの通知設定を確認してください');
+      updatePushUI();
+    }
+  }
+
+  async function disableMorningPush() {
+    const subscription = await getPushSubscription();
+    try {
+      if (subscription) {
+        const endpoint = subscription.endpoint;
+        await postPush('unsubscribe', { endpoint }).catch(() => {});
+        await subscription.unsubscribe();
+      }
+      saveJSON(STORAGE.pushEnabled, false);
+      toast('毎朝6時の通知をOFFにしました');
+    } finally {
+      updatePushUI();
+    }
+  }
+
+  async function updatePushUI() {
+    if (!els.pushBtn || !els.pushHint) return;
+    if (els.pushLocationText) els.pushLocationText.textContent = `通知地点：${currentLocation?.name || '地点を設定してください'}`;
+    if (location.protocol === 'file:' || window.__SORAFIT_SINGLE__) {
+      els.pushBtn.textContent = '公開版で利用';
+      els.pushBtn.disabled = true;
+      els.pushHint.textContent = '毎朝6時のプッシュ通知は、HTTPS公開版で利用できます。';
+      return;
+    }
+    if (!canUsePush()) {
+      els.pushBtn.textContent = '未対応';
+      els.pushBtn.disabled = true;
+      els.pushHint.textContent = isIOSDevice() ? 'iPhoneはホーム画面に追加したSoraFitから通知を設定してください。' : 'このブラウザはWeb Pushに対応していません。';
+      return;
+    }
+    const subscription = await getPushSubscription();
+    const on = Notification.permission === 'granted' && !!subscription;
+    els.pushBtn.disabled = false;
+    els.pushBtn.classList.toggle('is-on', on);
+    els.pushBtn.textContent = on ? '通知ON' : '通知をON';
+    if (Notification.permission === 'denied') {
+      els.pushHint.textContent = '通知がブラウザ設定で拒否されています。サイト設定から通知を許可してください。';
+    } else if (on) {
+      els.pushHint.textContent = '毎朝6時ごろ、最後に表示した地点の朝の概要をプッシュ通知します。';
+    } else {
+      els.pushHint.textContent = '通知をONにすると、毎朝6時ごろに最後に表示した地点の朝の概要を通知します。';
+    }
+  }
+
+  if (els.pushBtn) {
+    els.pushBtn.addEventListener('click', async () => {
+      const subscription = await getPushSubscription();
+      if (subscription && Notification.permission === 'granted') await disableMorningPush();
+      else await enableMorningPush();
+    });
+  }
+
+  // PWA install helper
+  let deferredInstallPrompt = null;
+
+  function isStandaloneMode() {
+    return window.matchMedia?.('(display-mode: standalone)')?.matches || window.navigator.standalone === true;
+  }
+
+  function isIOSDevice() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent || '');
+  }
+
+  function updateInstallUI() {
+    if (!els.installBtn || !els.installHint) return;
+    if (isStandaloneMode()) {
+      els.installBtn.textContent = 'インストール済み';
+      els.installBtn.disabled = true;
+      els.installHint.textContent = 'ホーム画面からSoraFitをアプリとして起動できます。';
+      return;
+    }
+    if (location.protocol === 'file:' || window.__SORAFIT_SINGLE__) {
+      els.installBtn.textContent = '公開後に利用';
+      els.installHint.textContent = 'インストール機能は、完全版をGitHub PagesなどのHTTPS環境で公開すると利用できます。';
+      return;
+    }
+    if (deferredInstallPrompt) {
+      els.installBtn.textContent = 'インストール';
+      els.installHint.textContent = 'この端末ではSoraFitをホーム画面へ直接インストールできます。';
+      return;
+    }
+    if (isIOSDevice()) {
+      els.installBtn.textContent = '追加方法';
+      els.installHint.textContent = 'iPhoneはSafariの共有ボタンから「ホーム画面に追加」を選ぶとインストールできます。';
+      return;
+    }
+    els.installBtn.textContent = '追加方法';
+    els.installHint.textContent = 'ブラウザのメニューに「アプリをインストール」または「ホーム画面に追加」が表示されます。';
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    updateInstallUI();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    updateInstallUI();
+    toast('SoraFitをインストールしました');
+  });
+
+  if (els.installBtn) {
+    els.installBtn.addEventListener('click', async () => {
+      if (isStandaloneMode()) { toast('SoraFitはインストール済みです'); return; }
+      if (deferredInstallPrompt) {
+        const promptEvent = deferredInstallPrompt;
+        deferredInstallPrompt = null;
+        await promptEvent.prompt();
+        try { await promptEvent.userChoice; } catch (_) {}
+        updateInstallUI();
+        return;
+      }
+      if (location.protocol === 'file:' || window.__SORAFIT_SINGLE__) {
+        toast('完全版をHTTPSで公開するとインストールできます');
+        return;
+      }
+      if (isIOSDevice()) {
+        toast('Safariの共有 →「ホーム画面に追加」を選んでください');
+      } else {
+        toast('ブラウザのメニューから「アプリをインストール」を選んでください');
+      }
+    });
+  }
+
+  els.speakBtn.addEventListener('click', speakSummary);
+
+  els.saveSettingsBtn.addEventListener('click', () => {
+    settings = { startHour: els.startHour.value || '07:00', endHour: els.endHour.value || '19:00' };
+    saveJSON(STORAGE.settings, settings);
+    if (currentWeather && currentLocation) renderAll(currentWeather, currentLocation, false);
+    syncPushSubscription({ silent: true });
+    toast(storageAvailable ? '外出時間を保存しました' : 'この開き方では端末保存できませんが、現在の表示には反映しました');
+  });
+
+  async function init() {
+    updateInstallUI();
+    updatePushUI();
+    renderSavedLocations();
+    requestAnimationFrame(syncTopStackSpacer);
+    if ('serviceWorker' in navigator && location.protocol !== 'file:' && !window.__SORAFIT_SINGLE__) {
+      navigator.serviceWorker.register('./sw.js').then(() => updatePushUI()).catch(err => console.warn('SW registration failed', err));
+    }
+    if (location.protocol === 'file:' && !currentLocation) {
+      status('単体ファイルで起動中', '市町村検索は利用できます。現在地・ホーム画面追加はHTTPS公開後に利用できます。', 'info');
+    }
+    if (currentLocation) {
+      els.locationName.textContent = currentLocation.name || '前回の地域';
+      await fetchWeather(currentLocation);
+      await updatePushUI();
+      syncPushSubscription({ silent: true });
+    }
+  }
+
+  init();
+})();
+
+</script>
+</body>
+</html>
