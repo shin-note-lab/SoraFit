@@ -634,7 +634,7 @@ body.locked .radar-dock{display:none}
             </div>
             <div id="weatherAlertText" class="weather-alert" hidden></div>
             <p id="adviceText" class="advice-text"></p>
-            <button id="speakBtn" class="voice-btn" type="button" disabled>🔊 朝の概要を聞く</button>
+            <button id="speakBtn" class="voice-btn" type="button" disabled>🔊 Weather Brief</button>
             <div id="morningSummaryText" class="morning-summary-bubble" hidden></div>
             <div id="sourceStamp" class="source-stamp"></div>
           </div>
@@ -750,7 +750,7 @@ body.locked .radar-dock{display:none}
             <div class="push-settings-copy">
               <div class="eyebrow">毎朝6:00</div>
               <h2>朝の天気をプッシュ通知</h2>
-              <p id="pushHint">通知をONにすると、毎朝6時ごろに最後に表示した地点の朝の概要を通知します。</p>
+              <p id="pushHint">通知をONにすると、毎朝6時ごろに最後に表示した地点の天気を通知します。</p>
               <div id="pushLocationText" class="push-location-text">通知地点：—</div>
             </div>
             <button id="pushBtn" class="push-btn" type="button">通知をON</button>
@@ -1491,6 +1491,7 @@ body.locked .radar-dock{display:none}
       suddenSentence,
       umbrellaSentence,
       windSentence,
+      weeklyOutlook(data),
       cacheSentence,
       '以上、今日の天気でした。気をつけていってらっしゃい。'
     ].filter(Boolean).join('');
@@ -1517,13 +1518,35 @@ body.locked .radar-dock{display:none}
     const windMs = Number(analysis.maxWind || 0) / 3.6;
     if (windMs >= 10) lines.push(`最大風速は約${windMs.toFixed(1)}m/s。風がかなり強くなる可能性があります。`);
     else if (windMs >= 7) lines.push(`最大風速は約${windMs.toFixed(1)}m/s。風が強めなので注意してください。`);
+    lines.push(`この先1週間：${weeklyOutlook(data)}`);
     return lines.join('\n');
+  }
+
+  function weeklyOutlook(data) {
+    const dates = data.daily.time || [];
+    const weekdays = ['日曜', '月曜', '火曜', '水曜', '木曜', '金曜', '土曜'];
+    const next = dates.slice(1, 7).map((date, offset) => {
+      const i = offset + 1;
+      return {
+        day: weekdays[new Date(`${date}T12:00:00+09:00`).getUTCDay()],
+        weather: WeatherCore.weatherInfo(data.daily.weather_code?.[i])[0],
+        high: Math.round(Number(data.daily.temperature_2m_max?.[i])),
+        rain: Number(data.daily.precipitation_probability_max?.[i] ?? 0)
+      };
+    });
+    if (!next.length) return '週間予報を取得できませんでした。';
+    const first = next.slice(0, 3).map(item => `${item.day}は${item.weather}`).join('、');
+    const highs = next.map(item => item.high).filter(Number.isFinite);
+    const range = highs.length ? `最高気温は${Math.min(...highs)}〜${Math.max(...highs)}度くらい。` : '';
+    const rainy = next.filter(item => item.rain >= 40).map(item => item.day);
+    const rain = rainy.length ? `雨に備えたい日は${rainy.slice(0, 3).join('・')}${rainy.length > 3 ? 'など' : ''}です。` : '大きな雨の予報は少なめです。';
+    return `明日からは、${first}の予報です。${range}${rain}`;
   }
 
   function resetSpeakButton() {
     if (!els.speakBtn) return;
     els.speakBtn.classList.remove('is-speaking');
-    els.speakBtn.textContent = '🔊 朝の概要を聞く';
+    els.speakBtn.textContent = '🔊 Weather Brief';
   }
 
   function speakSummary() {
@@ -2031,9 +2054,9 @@ body.locked .radar-dock{display:none}
     if (Notification.permission === 'denied') {
       els.pushHint.textContent = '通知がブラウザ設定で拒否されています。サイト設定から通知を許可してください。';
     } else if (on) {
-      els.pushHint.textContent = '毎朝6時ごろ、最後に表示した地点の朝の概要をプッシュ通知します。';
+      els.pushHint.textContent = '毎朝6時ごろ、最後に表示した地点の天気をプッシュ通知します。';
     } else {
-      els.pushHint.textContent = '通知をONにすると、毎朝6時ごろに最後に表示した地点の朝の概要を通知します。';
+      els.pushHint.textContent = '通知をONにすると、毎朝6時ごろに最後に表示した地点の天気を通知します。';
     }
   }
 
