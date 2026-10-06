@@ -1,41 +1,46 @@
-# SoraFit FINAL v1.30 — 最終監査（2026-09-29）
+# SoraFit v1.31 — 公開前監査
 
-## 公開後のUI更新（v1.30.1）
-画面下中央にYahoo!天気の雨雲レーダーへの丸いショートカットを追加しました。既存の雨雲レーダーカードと同じ選択地点URLを使用し、招待コード画面では非表示にします。Service Workerのキャッシュ名を `sorafit-shell-v1.30.1` に更新しました。通知バックエンドと配信時刻は変更していません。
+## 今回の変更
 
-## 総合判定
-フロントエンド公開用PWAと、毎朝6時のWeb Pushバックエンドを最終構成へ更新済み。
-GitHub Pagesへ配置すればインストール可能な構成です。
+今日の最高気温・最低気温について、Open-Meteoの前日データと比較し、現在値の直後に差を括弧書きで表示する処理を追加しました。
 
-## バックエンド実装・実測
-- Supabase Edge Function `sorafit`: ACTIVE / version 11
-- API health: HTTP 200
-- backend version: `1.30-final`
-- 通知時刻: `06:00 Asia/Tokyo`
-- Supabase Cron timezone: GMT
-- Cron job: `sorafit_morning_push_0600_jst`
-- Cron expression: `0 21 * * *` = 毎日06:00 JST
-- Cron active: true
-- dispatch手動疎通: HTTP 200 / total 0 / sent 0 / failed 0（登録端末0件時点）
-- GitHub Pages origin `https://shin-note-lab.github.io` からのAPIアクセス: CORS許可を実測確認
-- subscribe API: 正常なクライアントバージョン `pwa-v1.30` を受付。空payloadはHTTP 400となることを確認
+表示例：
+- `22℃ (+3℃)`
+- `14℃ (-2℃)`
+- `18℃ (±0℃)`
 
-## PWA監査
-- `index.html`: 生成・構文確認済み
-- `manifest.webmanifest`: JSON parse OK
-- `sw.js`: Node構文チェック OK
-- index内inline JavaScript: Node構文チェック OK
-- Service Worker cache: `sorafit-shell-v1.30-final`
-- icons: 180x180 / 192x192 / 512x512 を実寸確認
-- HTTPS公開後のService Worker登録・ホーム画面追加に対応
-- Web Push受信・通知クリック処理をService Workerへ実装
-- ZIP整合性: `testzip() = None`
+前日データの取得だけ失敗した場合は、当日の予報表示を止めず、差分表記のみ省略します。
 
-## 通知内容
-毎朝6時に、登録端末の設定地点についてOpen-Meteoから当日予報を取得し、天気・最高最低気温・服装・アウター・傘を通知。傘が必要な場合は雨の時間帯も通知本文へ含めます。
+## 維持した公開機能
 
-## 実機で残る1回だけの操作
-Web PushのOS仕様上、各端末は公開HTTPS版を開き「通知をON」を押して通知権限を許可する必要があります。その端末のPush Subscriptionが登録された後、翌朝以降の6時配信対象になります。
+- 今日・明日・明後日の概要表示
+- 1時間ごとの予報
+- 最大16日予報
+- 服装・アウター・傘の提案
+- Weather Briefと週間見通し
+- 登録地点
+- 毎朝6時のWeb Push設定
+- Yahoo!天気の雨雲レーダーショートカット
+- PWAインストール
+- 簡易招待コードゲート / noindex
 
-## 公開設定
-既存の簡易招待コードゲートと `noindex` を維持しています。強固なユーザー認証ではありません。
+## 更新
+
+- `index.html`：昨日との最高・最低気温差を追加
+- `sw.js`：キャッシュ名を `sorafit-shell-v1.31` に更新
+- `README.md`：v1.31の公開仕様へ更新
+- `SHA256SUMS.txt`：公開ファイルのハッシュを再生成
+
+## 検証方針
+
+公開前に以下を機械確認します。
+
+- HTML構造
+- inline JavaScript構文
+- manifest JSON
+- Service Worker構文
+- アイコン実寸
+- ZIP整合性
+- v1.31差分ロジックの存在
+
+ブラウザ実機での最終表示・Open-Meteo通信・Service Worker更新は、GitHub Pagesへ上書き後に確認してください。

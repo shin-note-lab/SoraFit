@@ -527,8 +527,12 @@ footer{font-size:8px;padding:14px 12px calc(20px + env(safe-area-inset-bottom))}
 body.locked .radar-dock{display:none}
 .toast{bottom:calc(112px + env(safe-area-inset-bottom))}
 
+
+/* v1.31: 今日の最高・最低気温に昨日差を併記 */
+.temp-delta{display:inline-block;margin-left:4px;font-size:.46em;line-height:1;color:#aeb9c6;font-weight:850;vertical-align:middle;white-space:nowrap}
+@media(max-width:520px){.today-panel .temp-delta{font-size:.43em;margin-left:3px}}
 </style>
-  <meta name="sorafit-version" content="1.30.1" />
+  <meta name="sorafit-version" content="1.31" />
 </head>
 <body class="locked">
   <div id="accessGate" class="access-gate" hidden>
@@ -1451,6 +1455,41 @@ body.locked .radar-dock{display:none}
     return `${API_FORECAST}?${params.toString()}`;
   }
 
+  function buildYesterdayURL(loc) {
+    const params = new URLSearchParams({
+      latitude: String(loc.latitude),
+      longitude: String(loc.longitude),
+      daily: 'temperature_2m_max,temperature_2m_min',
+      timezone: 'Asia/Tokyo',
+      temperature_unit: 'celsius',
+      past_days: '1',
+      forecast_days: '1'
+    });
+    return `${API_FORECAST}?${params.toString()}`;
+  }
+
+  function extractYesterdayTemps(historyData, todayDate) {
+    const times = historyData?.daily?.time || [];
+    let idx = -1;
+    for (let i = 0; i < times.length; i++) {
+      if (String(times[i]) < String(todayDate)) idx = i;
+    }
+    if (idx < 0) return null;
+    const max = Number(historyData?.daily?.temperature_2m_max?.[idx]);
+    const min = Number(historyData?.daily?.temperature_2m_min?.[idx]);
+    if (!Number.isFinite(max) || !Number.isFinite(min)) return null;
+    return { date: times[idx], max, min };
+  }
+
+  function tempDeltaMarkup(todayValue, yesterdayValue) {
+    const today = Math.round(Number(todayValue));
+    const yesterday = Math.round(Number(yesterdayValue));
+    if (!Number.isFinite(today) || !Number.isFinite(yesterday)) return '';
+    const delta = today - yesterday;
+    const label = delta > 0 ? `+${delta}℃` : delta < 0 ? `${delta}℃` : '±0℃';
+    return `<small class="temp-delta" title="昨日との差">(${label})</small>`;
+  }
+
 
   function buildVoiceSummary(data, loc, analysis, rainTiming, rainPeak, suddenRisk, fromCache = false) {
     const dailyCode = data.daily.weather_code?.[0] ?? data.current?.weather_code;
@@ -1603,8 +1642,15 @@ body.locked .radar-dock{display:none}
   async function fetchWeather(loc, { silent = false } = {}) {
     if (!silent) status('天気を取得しています…', 'Open-Meteoの最新予報を読み込んでいます。');
     try {
-      const data = await fetchJSON(buildForecastURL(loc), { cache: 'no-store' });
+      const [data, historyData] = await Promise.all([
+        fetchJSON(buildForecastURL(loc), { cache: 'no-store' }),
+        fetchJSON(buildYesterdayURL(loc), { cache: 'no-store' }).catch(error => {
+          console.warn('Yesterday comparison fetch failed:', error);
+          return null;
+        })
+      ]);
       if (!data?.hourly?.time?.length || !data?.daily?.time?.length || !data?.current) throw new Error('予報データが空です');
+      data._yesterdayTemps = extractYesterdayTemps(historyData, data.daily.time?.[0]);
       currentWeather = data;
       saveJSON(STORAGE.weather, { location: loc, fetchedAt: new Date().toISOString(), data });
       renderAll(data, loc, false);
@@ -1675,8 +1721,12 @@ body.locked .radar-dock{display:none}
     els.sourceStamp.textContent = fromCache
       ? '保存済み予報を表示中'
       : `Open-Meteo Best Match ・ ${new Intl.DateTimeFormat('ja-JP', {hour:'2-digit', minute:'2-digit'}).format(new Date())}取得`;
-    els.minTemp.textContent = `${Math.round(Number(data.daily.temperature_2m_min?.[0]))}℃`;
-    els.maxTemp.textContent = `${Math.round(Number(data.daily.temperature_2m_max?.[0]))}℃`;
+    const todayMin = Number(data.daily.temperature_2m_min?.[0]);
+    const todayMax = Number(data.daily.temperature_2m_max?.[0]);
+    const yesterdayMin = Number(data._yesterdayTemps?.min);
+    const yesterdayMax = Number(data._yesterdayTemps?.max);
+    els.minTemp.innerHTML = `${Math.round(todayMin)}℃${tempDeltaMarkup(todayMin, yesterdayMin)}`;
+    els.maxTemp.innerHTML = `${Math.round(todayMax)}℃${tempDeltaMarkup(todayMax, yesterdayMax)}`;
     els.rainChance.textContent = `☂ ${Math.round(Number(data.daily.precipitation_probability_max?.[0] ?? analysis.maxProb))}%`;
     if (els.tomorrowMax) els.tomorrowMax.textContent = `${Math.round(Number(data.daily.temperature_2m_max?.[1]))}℃`;
     if (els.tomorrowMin) els.tomorrowMin.textContent = `${Math.round(Number(data.daily.temperature_2m_min?.[1]))}℃`;
