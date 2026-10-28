@@ -532,7 +532,7 @@ body.locked .radar-dock{display:none}
 .temp-delta{display:inline-block;margin-left:4px;font-size:.46em;line-height:1;color:#aeb9c6;font-weight:850;vertical-align:middle;white-space:nowrap}
 @media(max-width:520px){.today-panel .temp-delta{font-size:.43em;margin-left:3px}}
 </style>
-  <meta name="sorafit-version" content="1.31" />
+  <meta name="sorafit-version" content="1.31.1" />
 </head>
 <body class="locked">
   <div id="accessGate" class="access-gate" hidden>
@@ -1588,40 +1588,137 @@ body.locked .radar-dock{display:none}
     els.speakBtn.textContent = '🔊 Weather Brief';
   }
 
+  // 長文を一度に渡さず、日本語の文末を優先して短く分割する。
+  function splitVoiceSummary(text, limit = 130) {
+    const sentences = String(text || '').replace(/\s+/g, ' ').match(/[^。！？!?]+[。！？!?]*/g) || [];
+    const chunks = [];
+    for (const sentence of sentences) {
+      let rest = sentence.trim();
+      while (rest) {
+        const last = chunks.length - 1;
+        if (last >= 0 && chunks[last].length + rest.length <= limit) {
+          chunks[last] += rest;
+          break;
+        }
+        if (rest.length <= limit) {
+          chunks.push(rest);
+          break;
+        }
+        const comma = rest.lastIndexOf('、', limit - 1);
+        const cut = comma >= Math.floor(limit / 2) ? comma + 1 : limit;
+        chunks.push(rest.slice(0, cut));
+        rest = rest.slice(cut);
+      }
+    }
+    return chunks;
+  }
+
+  let voicePlayback = null;
+
+  function stopVoicePlayback() {
+    const playback = voicePlayback;
+    voicePlayback = null;
+    currentUtterance = null;
+    if (playback?.startTimer) clearTimeout(playback.startTimer);
+    try { window.speechSynthesis?.cancel(); } catch (error) { console.warn('SoraFit speech stop:', error); }
+    resetSpeakButton();
+  }
+
+  function voiceErrorHint(code) {
+    if (code === 'network') return '音声データの通信を確認してください。';
+    if (code === 'not-allowed') return 'ブラウザの音声再生許可を確認してください。';
+    if (code === 'language-unavailable' || code === 'voice-unavailable') return '日本語の読み上げ音声を確認してください。';
+    if (code === 'audio-busy') return 'ほかの音声を停止して、再度お試しください。';
+    if (code === 'timeout') return '音声エンジンが応答しませんでした。';
+    return '再度お試しください。';
+  }
+
+  function playVoiceChunk(playback) {
+    if (voicePlayback !== playback) return;
+    if (playback.index >= playback.chunks.length) {
+      voicePlayback = null;
+      currentUtterance = null;
+      resetSpeakButton();
+      return;
+    }
+    const utter = new SpeechSynthesisUtterance(playback.chunks[playback.index]);
+    utter.lang = 'ja-JP';
+    utter.rate = 1.05;
+    utter.pitch = 1.0;
+    utter.volume = 1.0;
+    const selectedVoice = playback.candidates[playback.candidateIndex];
+    if (selectedVoice) utter.voice = selectedVoice;
+    currentUtterance = utter;
+
+    const clearStartTimer = () => {
+      if (playback.startTimer) clearTimeout(playback.startTimer);
+      playback.startTimer = null;
+    };
+    const isCurrent = () => voicePlayback === playback && currentUtterance === utter;
+    const onFailure = errorCode => {
+      if (!isCurrent()) return;
+      clearStartTimer();
+      currentUtterance = null;
+      const code = String(errorCode || 'unknown');
+      console.warn('SoraFit voice error:', code, 'part:', playback.index + 1);
+      if (code !== 'not-allowed' && playback.candidateIndex + 1 < playback.candidates.length) {
+        playback.candidateIndex += 1;
+        try { window.speechSynthesis.cancel(); } catch (_) {}
+        setTimeout(() => playVoiceChunk(playback), 160);
+        return;
+      }
+      stopVoicePlayback();
+      toast('音声を再生できませんでした（' + code + '）。' + voiceErrorHint(code));
+    };
+    utter.onstart = () => {
+      if (!isCurrent()) return;
+      clearStartTimer();
+      els.speakBtn.classList.add('is-speaking');
+      els.speakBtn.textContent = '■ 読み上げを停止';
+    };
+    utter.onend = () => {
+      if (!isCurrent()) return;
+      clearStartTimer();
+      currentUtterance = null;
+      playback.index += 1;
+      setTimeout(() => playVoiceChunk(playback), 60);
+    };
+    utter.onerror = event => onFailure(event?.error);
+    playback.startTimer = setTimeout(() => onFailure('timeout'), 12000);
+    try { window.speechSynthesis.speak(utter); }
+    catch (error) {
+      console.warn('SoraFit speech exception:', error);
+      onFailure('exception');
+    }
+  }
+
   function speakSummary() {
+    if (voicePlayback) { stopVoicePlayback(); return; }
     if (!currentVoiceSummary) { toast('先に天気を取得してください'); return; }
     if (!('speechSynthesis' in window) || typeof SpeechSynthesisUtterance === 'undefined') {
       toast('このブラウザは音声読み上げに対応していません');
       return;
     }
+    const chunks = splitVoiceSummary(currentVoiceSummary);
+    if (!chunks.length) { toast('読み上げる文章がありません'); return; }
+    let voices = [];
+    try { voices = window.speechSynthesis.getVoices?.() || []; } catch (_) {}
+    const japaneseVoices = voices.filter(v => /^ja(?:-|$)/i.test(String(v.lang || '')));
+    const localVoices = japaneseVoices.filter(v => v.localService === true);
+    const otherVoices = japaneseVoices.filter(v => v.localService !== true);
+    // 端末内の日本語音声→ブラウザ自動選択→別の日本語音声の順に試す。
+    const candidates = [...localVoices.slice(0, 2), null, ...otherVoices.slice(0, 2)];
+    const playback = { chunks, index: 0, candidateIndex: 0, candidates, startTimer: null };
+    voicePlayback = playback;
+    els.speakBtn.classList.add('is-speaking');
+    els.speakBtn.textContent = '■ 読み上げを停止';
+    // 通常再生ではcancel()を使わず、過去の再生が残るときだけクリア。
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-      window.speechSynthesis.cancel();
-      currentUtterance = null;
-      resetSpeakButton();
-      return;
+      try { window.speechSynthesis.cancel(); } catch (_) {}
+      setTimeout(() => playVoiceChunk(playback), 160);
+    } else {
+      playVoiceChunk(playback);
     }
-
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(currentVoiceSummary);
-    utter.lang = 'ja-JP';
-    utter.rate = 1.05;
-    utter.pitch = 1.0;
-    utter.volume = 1.0;
-    const voices = window.speechSynthesis.getVoices?.() || [];
-    const jaVoice = voices.find(v => String(v.lang || '').toLowerCase().startsWith('ja'));
-    if (jaVoice) utter.voice = jaVoice;
-    utter.onstart = () => {
-      els.speakBtn.classList.add('is-speaking');
-      els.speakBtn.textContent = '■ 読み上げを停止';
-    };
-    utter.onend = () => { currentUtterance = null; resetSpeakButton(); };
-    utter.onerror = (event) => {
-      currentUtterance = null;
-      resetSpeakButton();
-      if (event?.error !== 'canceled' && event?.error !== 'interrupted') toast('音声を再生できませんでした');
-    };
-    currentUtterance = utter;
-    window.speechSynthesis.speak(utter);
   }
 
   async function fetchJSON(url, options = {}) {
