@@ -531,8 +531,23 @@ body.locked .radar-dock{display:none}
 /* v1.31: 今日の最高・最低気温に昨日差を併記 */
 .temp-delta{display:inline-block;margin-left:4px;font-size:.46em;line-height:1;color:#aeb9c6;font-weight:850;vertical-align:middle;white-space:nowrap}
 @media(max-width:520px){.today-panel .temp-delta{font-size:.43em;margin-left:3px}}
+
+/* v1.31.2: one-day hourly history; future and current remain the default view */
+.hourly-nav{display:flex;justify-content:space-between;gap:8px;padding:0 13px 11px;flex-wrap:wrap}
+.hourly-jump{border:1px solid #436483;border-radius:999px;background:#1d3851;color:#d5ecff;font-size:11px;font-weight:850;padding:8px 12px;min-height:34px;cursor:pointer}
+.hourly-jump.is-now{background:#285e88;border-color:#568fc1;color:#fff}
+.hourly-jump:disabled{opacity:.45;cursor:default}
+.hourly-history-note{font-size:10px;color:#a6b8c9;line-height:1.55;margin:9px 13px 0}
+.hour-col.hour-past{background:#252a32}
+.hour-col.hour-past .hour-time{background:linear-gradient(180deg,#303d49,#293642)!important;color:#cbd7e3!important}
+.hour-col.hour-past .hour-cell:not(.hour-time){filter:saturate(.80)}
+.hour-col.hour-now{box-shadow:inset 2px 0 #70caff,inset -2px 0 #70caff;background:#193248}
+.hour-col.hour-now .hour-time{background:#285e83!important;color:#fff!important}
+.hour-now-label{display:block;font-size:9px;color:#9de3ff;font-weight:950;line-height:1}
+.hour-col.hour-now .hour-time{display:flex;flex-direction:column;gap:1px}
+@media(max-width:390px){.hourly-nav{padding:0 8px 9px}.hourly-jump{font-size:10px;padding:7px 9px}.hourly-history-note{margin:8px 10px 0}}
 </style>
-  <meta name="sorafit-version" content="1.31.1" />
+  <meta name="sorafit-version" content="1.31.2" />
 </head>
 <body class="locked">
   <div id="accessGate" class="access-gate" hidden>
@@ -647,10 +662,14 @@ body.locked .radar-dock{display:none}
         <section class="card dark-card hourly-card-shell">
           <div class="section-head compact-head">
             <div>
-              <div class="eyebrow">現在〜約48時間</div>
+              <div class="eyebrow">過去24時間〜今後約48時間</div>
               <h2>時間ごとの天気</h2>
             </div>
             <span class="pill">左右にスクロール</span>
+          </div>
+          <div class="hourly-nav" aria-label="時間別天気の表示位置">
+            <button id="hourlyPastBtn" class="hourly-jump" type="button" disabled>← 過去24時間</button>
+            <button id="hourlyNowBtn" class="hourly-jump is-now" type="button" disabled>現在へ戻る →</button>
           </div>
           <div class="hourly-board">
             <div class="hourly-row-labels" aria-hidden="true">
@@ -662,8 +681,9 @@ body.locked .radar-dock{display:none}
               <span>湿度</span>
               <span>風速</span>
             </div>
-            <div id="hourlyList" class="hourly-list" tabindex="0" aria-label="48時間の1時間ごとの天気予報。各時間の1時間雨量を含みます"></div>
+            <div id="hourlyList" class="hourly-list" tabindex="0" aria-label="過去24時間の推定値と今後約48時間の1時間ごとの天気。左右にスクロールできます"></div>
           </div>
+          <p id="hourlyHistoryNote" class="hourly-history-note" role="note">過去の数値は気象モデルによる推定値で、観測所の実測値ではありません。</p>
         </section>
 
         <section class="card dark-card weekly-card">
@@ -1274,6 +1294,7 @@ body.locked .radar-dock{display:none}
     minTemp: $('minTemp'), maxTemp: $('maxTemp'), rainChance: $('rainChance'),
     currentWeatherLabel: $('currentWeatherLabel'), currentTemp: $('currentTemp'), currentFeels: $('currentFeels'),
     currentHumidity: $('currentHumidity'), currentWind: $('currentWind'), hourlyList: $('hourlyList'),
+    hourlyPastBtn: $('hourlyPastBtn'), hourlyNowBtn: $('hourlyNowBtn'), hourlyHistoryNote: $('hourlyHistoryNote'),
     dailyList: $('dailyList'), startHour: $('startHour'), endHour: $('endHour'), saveSettingsBtn: $('saveSettingsBtn'),
     rainTimingText: $('rainTimingText'), weatherAlertText: $('weatherAlertText'), speakBtn: $('speakBtn'), morningSummaryText: $('morningSummaryText'),
     radarYahooBtn: $('radarYahooBtn'), radarYahooDock: $('radarYahooDock'), installBtn: $('installBtn'), installHint: $('installHint'),
@@ -1450,7 +1471,8 @@ body.locked .radar-dock{display:none}
       temperature_unit: 'celsius',
       wind_speed_unit: 'kmh',
       precipitation_unit: 'mm',
-      forecast_days: '16'
+      forecast_days: '16',
+      past_hours: '24'
     });
     return `${API_FORECAST}?${params.toString()}`;
   }
@@ -1858,24 +1880,47 @@ body.locked .radar-dock{display:none}
     }
   }
 
+  // 現在の時刻を画面左側に戻す。初期表示は現在時刻のまま維持する。
+  function jumpToHourlyNow(smooth = false) {
+    if (!els.hourlyList) return;
+    const nowEl = els.hourlyList.querySelector('[data-hour-role="now"]');
+    if (!nowEl) return;
+    const currentLeft = els.hourlyList.scrollLeft;
+    const distance = nowEl.getBoundingClientRect().left - els.hourlyList.getBoundingClientRect().left;
+    const target = Math.max(0, currentLeft + distance - 8);
+    if (smooth && typeof els.hourlyList.scrollTo === 'function') {
+      els.hourlyList.scrollTo({ left: target, behavior: 'smooth' });
+    } else {
+      els.hourlyList.scrollLeft = target;
+    }
+  }
+
   function renderHourly(data) {
     if (!els.hourlyList || !data?.hourly?.time?.length) return;
     const times = data.hourly.time;
     const current = String(data.current?.time || '');
     const currentKey = /^\d{4}-\d{2}-\d{2}T\d{2}/.test(current) ? current.slice(0, 13) : '';
-    let start = currentKey ? times.findIndex(t => String(t).slice(0, 13) >= currentKey) : 0;
-    if (start < 0) start = 0;
-    const end = Math.min(times.length - 1, start + 49);
-    const startDate = String(times[start]).slice(0,10);
+    // past_hours=24で現在から遡ったデータを取得している。
+    // 旧キャッシュの場合も、存在しない時間を捏造せず取得できた分だけ表示。
+    let nowIndex = currentKey ? times.findIndex(t => String(t).slice(0, 13) >= currentKey) : -1;
+    if (nowIndex < 0) nowIndex = Math.max(0, times.findIndex(t => String(t).slice(0, 10) === String(data.daily?.time?.[0] || '')));
+    const start = Math.max(0, nowIndex - 24);
+    const end = Math.min(times.length, nowIndex + 49);
+    const startDate = String(times[start] || '').slice(0, 10);
+    const todayDate = String(data.daily?.time?.[0] || '').slice(0, 10);
     let lastDate = startDate;
     const cols = [];
+    let pastCount = 0;
     for (let i = start; i < end; i++) {
       const t = String(times[i]);
       const date = t.slice(0, 10);
       const hour = Number(t.slice(11, 13));
+      const isPast = i < nowIndex;
+      const isNow = i === nowIndex;
+      if (isPast) pastCount++;
       if (date !== lastDate) {
         const dailyIndex = (data.daily.time || []).indexOf(date);
-        const dayWord = dailyIndex === 1 ? '明日' : dailyIndex === 2 ? '明後日' : '日付変更';
+        const dayWord = date < todayDate ? '昨日' : date === todayDate ? '今日' : dailyIndex === 1 ? '明日' : dailyIndex === 2 ? '明後日' : '日付変更';
         const md = formatMD(date);
         const { wd, cls } = weekdayInfo(date);
         cols.push(`<div class="hour-day-divider" aria-label="${escapeHTML(dayWord)} ${escapeHTML(md)} ${escapeHTML(wd)}曜日"><strong>${escapeHTML(dayWord)}</strong><div class="hour-day-date"><span>${escapeHTML(md)}</span><span class="hour-weekday${cls}">${escapeHTML(wd)}</span></div></div>`);
@@ -1883,26 +1928,42 @@ body.locked .radar-dock{display:none}
       }
       const intervalIdx = i + 1;
       const [, icon] = WeatherCore.weatherInfo(data.hourly.weather_code?.[i]);
-      const temp = Math.round(Number(data.hourly.temperature_2m?.[i]));
-      const prob = Math.round(Number(data.hourly.precipitation_probability?.[intervalIdx] ?? 0));
-      const rain = Math.max(0, Number(data.hourly.precipitation?.[intervalIdx] ?? 0));
-      const humidity = Math.round(Number(data.hourly.relative_humidity_2m?.[i] ?? 0));
-      const humidityNote = humidityComment(humidity);
-      const windMs = Number(data.hourly.wind_speed_10m?.[i] ?? 0) / 3.6;
-      const rainHeight = Math.min(100, rain <= 0 ? 0 : Math.max(8, rain / 10 * 100));
+      const tempValue = data.hourly.temperature_2m?.[i];
+      const temp = tempValue == null ? '—' : `${Math.round(Number(tempValue))}℃`;
+      const probValue = data.hourly.precipitation_probability?.[intervalIdx];
+      const prob = probValue == null || !Number.isFinite(Number(probValue)) ? '—' : `${Math.round(Number(probValue))}%`;
+      const rainValue = data.hourly.precipitation?.[intervalIdx];
+      const rain = rainValue == null || !Number.isFinite(Number(rainValue)) ? null : Math.max(0, Number(rainValue));
+      const humidityValue = data.hourly.relative_humidity_2m?.[i];
+      const humidity = humidityValue == null ? null : Math.round(Number(humidityValue));
+      const humidityNote = humidity === null ? {label:'',cls:''} : humidityComment(humidity);
+      const windValue = data.hourly.wind_speed_10m?.[i];
+      const windMs = windValue == null ? null : Number(windValue) / 3.6;
+      const rainHeight = rain === null ? 0 : Math.min(100, rain <= 0 ? 0 : Math.max(8, rain / 10 * 100));
       const nextHour = (hour + 1) % 24;
-      cols.push(`<article class="hour-col" aria-label="${escapeHTML(date)} ${hour}時。降水は${hour}時から${nextHour}時の予報">
-        <div class="hour-cell hour-time"><strong>${hour}</strong></div>
+      const role = isNow ? ' data-hour-role="now"' : '';
+      const typeLabel = isPast ? '過去の推定値' : isNow ? '現在' : '今後の予報';
+      cols.push(`<article class="hour-col${isPast ? ' hour-past' : ''}${isNow ? ' hour-now' : ''}"${role} aria-label="${escapeHTML(date)} ${hour}時、${typeLabel}。1時間雨量は${hour}時から${nextHour}時まで">
+        <div class="hour-cell hour-time"><strong>${hour}</strong>${isNow ? '<small class="hour-now-label">現在</small>' : ''}</div>
         <div class="hour-cell hour-weather">${icon}</div>
-        <div class="hour-cell hour-temp">${temp}℃</div>
-        <div class="hour-cell hour-prob">${prob}%</div>
-        <div class="hour-cell hour-rain"><div class="rain-microbar"><i style="height:${rainHeight}%"></i></div><strong>${rain.toFixed(1)}mm</strong></div>
-        <div class="hour-cell hour-humidity"><strong>${humidity}%</strong>${humidityNote.label ? `<small class="humidity-note ${humidityNote.cls}">${humidityNote.label}</small>` : ''}</div>
-        <div class="hour-cell hour-wind"><strong>${windMs.toFixed(1)}m/s</strong></div>
+        <div class="hour-cell hour-temp">${temp}</div>
+        <div class="hour-cell hour-prob">${prob}</div>
+        <div class="hour-cell hour-rain"><div class="rain-microbar"><i style="height:${rainHeight}%"></i></div><strong>${rain === null ? '—' : rain.toFixed(1) + 'mm'}</strong></div>
+        <div class="hour-cell hour-humidity"><strong>${humidity === null ? '—' : humidity + '%'}</strong>${humidityNote.label ? `<small class="humidity-note ${humidityNote.cls}">${humidityNote.label}</small>` : ''}</div>
+        <div class="hour-cell hour-wind"><strong>${windMs === null ? '—' : windMs.toFixed(1) + 'm/s'}</strong></div>
       </article>`);
     }
     els.hourlyList.innerHTML = cols.join('');
-    els.hourlyList.scrollLeft = 0;
+    const hasPast = pastCount > 0;
+    if (els.hourlyPastBtn) els.hourlyPastBtn.disabled = !hasPast;
+    if (els.hourlyNowBtn) els.hourlyNowBtn.disabled = !cols.length;
+    if (els.hourlyHistoryNote) {
+      els.hourlyHistoryNote.textContent = hasPast
+        ? `過去${pastCount}時間分は気象モデルによる推定値です。観測所の実測値ではありません。`
+        : '過去24時間のデータは現在表示できません。再読み込みしてお試しください。';
+    }
+    // dashboardが非表示の間はスクロール幅を計算できないため、表示後に実行。
+    requestAnimationFrame(() => jumpToHourlyNow(false));
   }
 
   function renderDaily(data) {
@@ -2287,6 +2348,11 @@ body.locked .radar-dock{display:none}
       }
     });
   }
+
+  if (els.hourlyPastBtn) els.hourlyPastBtn.addEventListener('click', () => {
+    if (els.hourlyList) els.hourlyList.scrollTo({ left: 0, behavior: 'smooth' });
+  });
+  if (els.hourlyNowBtn) els.hourlyNowBtn.addEventListener('click', () => jumpToHourlyNow(true));
 
   els.speakBtn.addEventListener('click', speakSummary);
 
